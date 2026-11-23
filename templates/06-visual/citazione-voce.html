@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citazione a tutta pagina</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --bg: #2240c9; --ink: #ffffff; --soft: #c8d2ff;
+       background: var(--bg); color: var(--ink); font-family: "Instrument Serif", Georgia, serif; }
+  .mark { position: absolute; left: 36px; top: -8px; font-size: 640px; line-height: 1; color: #3d5ae0; font-style: italic; }
+  .mark.in { animation-name: markin; animation-duration: 1.4s; }
+  @keyframes markin { from { opacity: 0; transform: translate(-40px, 0); } }
+  blockquote { position: absolute; left: 150px; top: 150px; width: 800px; margin: 0; font-size: 62px; line-height: 1.08; letter-spacing: -.01em; }
+  blockquote em { font-style: italic; color: var(--soft); }
+  .who { position: absolute; left: 150px; bottom: 80px; display: flex; align-items: center; gap: 18px; font-family: "IBM Plex Sans", sans-serif; }
+  .who svg { width: 64px; height: 64px; }
+  .who b { display: block; font-size: 17px; font-weight: 600; }
+  .who span { font-size: 14px; color: var(--soft); }
+  .side { position: absolute; right: 72px; bottom: 80px; width: 250px; font-family: "IBM Plex Sans", sans-serif; font-size: 14px; line-height: 1.45; color: var(--soft); border-top: 1px solid rgba(255,255,255,.3); padding-top: 14px; }
+  .side b { display: block; font-family: "Instrument Serif", serif; font-weight: 400; font-size: 44px; line-height: 1; color: var(--ink); margin-bottom: 6px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide art s">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="mark in" aria-hidden="true">“</div>
+  <blockquote class="in" style="--d:.2s">Sappiamo fare bene il nostro lavoro. <em>Il problema è che lo facciamo quattordici volte, in quattordici modi diversi.</em></blockquote>
+  <div class="who in" style="--d:.6s">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#3d5ae0"/><circle cx="32" cy="25" r="10" fill="#c8d2ff"/><path d="M12 54c4-11 12-16 20-16s16 5 20 16" fill="#c8d2ff"/></svg>
+    <div><b>Responsabile di sede</b><span>Intervista di maggio 2026. Citazione illustrativa</span></div>
+  </div>
+  <p class="side fade" style="--d:.9s"><b>25</b>interviste a responsabili e addetti hanno indicato la stessa causa principale</p>
+</main>
+<script src="../../assets/slide.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Numero protagonista (aurora)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --bg: #0a1433; --ink: #f4f6fc; --soft: #aebbe3; --a1: #2a78d6; --a2: #7b61ff; --a3: #19c3b0;
+       background: var(--bg); color: var(--ink); font-family: "Hanken Grotesk", var(--font); }
+  /* aurora: tre luci sfocate che si muovono lentamente */
+  .aurora { filter: blur(70px) saturate(130%); opacity: .9; }
+  .aurora i { position: absolute; border-radius: 50%; mix-blend-mode: screen; }
+  .aurora i:nth-child(1) { width: 760px; height: 520px; left: 520px; top: -180px; background: var(--a1); animation: drift1 22s ease-in-out infinite alternate; }
+  .aurora i:nth-child(2) { width: 620px; height: 460px; left: 820px; top: 120px; background: var(--a2); opacity: .75; animation: drift2 26s ease-in-out infinite alternate; }
+  .aurora i:nth-child(3) { width: 520px; height: 380px; left: 640px; top: 380px; background: var(--a3); opacity: .55; animation: drift3 30s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(-120px, 60px) scale(1.1); } }
+  @keyframes drift2 { to { transform: translate(-60px, -90px) scale(.92); } }
+  @keyframes drift3 { to { transform: translate(110px, -40px) scale(1.15); } }
+  html.still .aurora i { animation: none; }
+  .vignette { background: radial-gradient(120% 90% at 20% 80%, rgba(10,20,51,.0) 30%, rgba(10,20,51,.85) 100%); }
+  .top { position: absolute; left: 72px; right: 72px; top: 56px; display: flex; justify-content: space-between; font-size: 15px; font-weight: 500; color: var(--soft); }
+  .hero { position: absolute; left: 72px; bottom: 76px; }
+  .kicker { font-size: 22px; font-weight: 500; color: var(--soft); margin-bottom: 4px; }
+  .num { display: flex; align-items: flex-end; gap: 20px; }
+  .big { font-size: 380px; line-height: .8; font-weight: 700; letter-spacing: 0; padding: 0 .04em 0 0; margin-left: -.04em;
+         background: linear-gradient(180deg, #ffffff 30%, #9dbcff 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+         font-variant-numeric: tabular-nums; }
+  .unit { font-size: 56px; font-weight: 300; line-height: 1.05; letter-spacing: -.02em; padding-bottom: 14px; }
+  .note { margin-top: 44px; max-width: 560px; font-size: 22px; line-height: 1.45; font-weight: 300; color: #d9e0f5; }
+  .note b { font-weight: 700; color: var(--ink); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide art s">
+  <div class="layer aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="layer vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="top fade" style="--d:.2s"><span>Piano di trasformazione 2027–2029</span><span>04</span></div>
+
+  <div class="hero">
+    <p class="kicker in" style="--d:.1s">Margine operativo recuperabile ogni anno</p>
+    <div class="num in" style="--d:.25s">
+      <span class="big" id="count" data-to="9">9</span>
+      <span class="unit">milioni<br>di euro</span>
+    </div>
+    <p class="note in" style="--d:.7s">A regime dal 2031. <b>Sei milioni su nove</b> arrivano dal back office: controlli doppi, dati ricopiati, sedi che lavorano ciascuna a modo suo.</p>
+  </div>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* Conteggio iniziale del numero: modificare data-to sull'elemento #count */
+const el = document.getElementById("count"), to = +el.dataset.to;
+if (!CVL.still) {
+  const t0 = performance.now() + 250, dur = 1400;
+  const tick = t => { const k = Math.min(Math.max((t - t0) / dur, 0), 1), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(e * to); if (k < 1) requestAnimationFrame(tick); };
+  el.textContent = 0; requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>

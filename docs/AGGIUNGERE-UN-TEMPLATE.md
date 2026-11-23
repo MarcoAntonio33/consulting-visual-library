@@ -20,6 +20,13 @@
 5. Eseguire `python3 scripts/genera-anteprime.py nome-template` e guardare l'immagine: lo script segnala errori JavaScript e contenuti che escono dallo spazio disponibile.
 6. Se il template deriva da materiale esterno, indicarne origine e licenza in un commento in testa al file e aggiornare `docs/FONTI.md`.
 
+## Slide visive (cartella 06-visual)
+
+- Caricare `theme.css` e poi `art.css`, e usare `<main class="slide art">`: la tela resta 1280 × 720 ma senza margini.
+- Un solo ingresso animato per slide: classi `.in` e `.fade` con `style="--d:.2s"` per il ritardo. Lo stato finale è quello scritto nel CSS, così la stampa e l'opzione "riduci movimento" mostrano la slide completa.
+- Nelle animazioni scritte in JavaScript controllare `CVL.still`: se è vero, disegnare subito lo stato finale.
+- Per gli sfondi Vanta e le animazioni Motion aggiungere `data-attesa` al `<body>`, così lo script delle anteprime aspetta che siano pronti.
+
 ## Regole di leggibilità per i grafici
 
 - Un solo colore pieno per il dato da evidenziare (`--focus`), grigio (`--context`) per il resto.
@@ -38,3 +45,4 @@
 | `CVL.colors` | Colori del tema letti da `theme.css` (`brand`, `focus`, `context`, `pos`, `neg`, `series`, ...) |
 | `CVL.svg(tag, attributi, genitore)` | Crea un elemento SVG, per i diagrammi disegnati a mano |
 | `CVL.font` | Pila dei caratteri del tema |
+| `CVL.still` | Vero se le animazioni vanno saltate (riduci movimento attivo oppure `?static` nell'indirizzo) |

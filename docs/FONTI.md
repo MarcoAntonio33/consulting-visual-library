@@ -8,7 +8,12 @@ Data dell'ultima verifica: **23 novembre 2026**. Ripetere la verifica almeno ogn
 |---|---|---|---|---|---|
 | [Apache ECharts](https://echarts.apache.org) | 6.1.0 (maggio 2026) | Apache 2.0 | `vendor/echarts/` (con `LICENSE` e `NOTICE`) | Grafici numerici: barre, linee, dispersione, heatmap | Registro npm, 23/11/2026 |
 | [reveal.js](https://revealjs.com) | 6.0.2 | MIT | `vendor/reveal/` (con `LICENSE`) | Contenitore per presentazioni in sequenza | Registro npm, 23/11/2026 |
-| [IBM Plex Sans](https://github.com/IBM/plex) tramite Fontsource | 5.3.0 | SIL Open Font License 1.1 | `assets/fonts/` (con `OFL-IBM-Plex.txt`) | Carattere di tutte le slide | Registro npm, 23/11/2026 |
+| [IBM Plex Sans](https://github.com/IBM/plex) tramite Fontsource | 5.3.0 | SIL Open Font License 1.1 | `assets/fonts/` (con `OFL-IBM-Plex.txt`) | Carattere delle slide 01–05 | Registro npm, 23/11/2026 |
+| Hanken Grotesk, Newsreader, Bricolage Grotesque, Archivo, Schibsted Grotesk, Instrument Serif (Fontsource) | 5.3.0 | SIL Open Font License 1.1 | `assets/fonts/` (licenze `OFL-*.txt`) | Caratteri delle slide visive (06) e di WebSlides | Registro npm, 23/11/2026 |
+| [WebSlides](https://github.com/webslides/WebSlides) | 1.5.0 | MIT | `vendor/webslides/` (con `LICENSE` e `MODIFICHE.md`) | Presentazioni in stile sito web | Registro npm, 23/11/2026 |
+| [Vanta.js](https://www.vantajs.com) | 0.5.24 | MIT | `vendor/vanta/` | Sfondi animati in 3D | Registro npm, 23/11/2026 |
+| [three.js](https://threejs.org) | r134 (0.134.0) | MIT | `vendor/vanta/three.min.js` | Richiesto da Vanta; versione indicata dagli esempi di Vanta | Registro npm, 23/11/2026 |
+| [Motion](https://motion.dev) | 14.14.0 | MIT | `vendor/motion/` | Animazioni d'ingresso e conteggi | Registro npm, 23/11/2026 |
 
 Per aggiornare ECharts o reveal.js:
 
@@ -18,6 +23,8 @@ npm pack echarts@<versione> reveal.js@<versione>
 # e dist/reveal.css, dist/reveal.js, dist/reset.css, dist/plugin/notes.js, LICENSE in vendor/reveal/
 python3 scripts/genera-anteprime.py   # controlla che nessun template si sia rotto
 ```
+
+Altre risorse in stile sito web (componenti, illustrazioni, foto): [`RISORSE-VISIVE.md`](RISORSE-VISIVE.md).
 
 ## Librerie utili non incluse
 

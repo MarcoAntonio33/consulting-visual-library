@@ -23,4 +23,7 @@ SOFTWARE.
 Third-party components keep their own licenses:
 - vendor/echarts: Apache License 2.0 (see vendor/echarts/LICENSE and NOTICE)
 - vendor/reveal: MIT (see vendor/reveal/LICENSE)
-- assets/fonts: SIL Open Font License 1.1 (see assets/fonts/OFL-IBM-Plex.txt)
+- vendor/webslides: MIT (see vendor/webslides/LICENSE and MODIFICHE.md)
+- vendor/vanta: MIT (Vanta.js, see LICENSE-vanta; three.js, see LICENSE-three)
+- vendor/motion: MIT (see vendor/motion/LICENSE.md)
+- assets/fonts: SIL Open Font License 1.1 (see assets/fonts/OFL-*.txt)

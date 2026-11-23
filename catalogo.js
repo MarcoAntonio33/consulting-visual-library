@@ -3,13 +3,18 @@
    la galleria direttamente dal disco, senza server). */
 window.CATALOGO = {
   aggiornato: "2026-11-23",
+  presentazioni: [
+    { file: "presentazioni/webslides-esempio.html", titolo: "Presentazione in stile sito web (WebSlides)" },
+    { file: "presentazioni/esempio-reveal.html", titolo: "Presentazione con le slide della libreria (reveal.js)" }
+  ],
   categorie: [
     { id: "00-base", nome: "Base", descrizione: "Punto di partenza per costruire una nuova grafica con lo stile della libreria." },
     { id: "01-strategia", nome: "Strategia", descrizione: "Analisi del contesto, posizionamento e scelte di indirizzo." },
     { id: "02-performance", nome: "Performance", descrizione: "Numeri, andamenti e confronti: dai cruscotti ai ponti di margine." },
     { id: "03-processi", nome: "Processi e organizzazione", descrizione: "Come funziona il lavoro, chi fa cosa e come è organizzato." },
     { id: "04-roadmap", nome: "Roadmap e pianificazione", descrizione: "Tempi, fasi, tappe e avanzamento di programmi e progetti." },
-    { id: "05-sintesi-executive", nome: "Sintesi executive", descrizione: "Messaggi chiave, scelte e decisioni per il vertice." }
+    { id: "05-sintesi-executive", nome: "Sintesi executive", descrizione: "Messaggi chiave, scelte e decisioni per il vertice." },
+    { id: "06-visual", nome: "Slide visive", descrizione: "Stile sito web: grandi titoli, numeri protagonisti, grafiche generative e animazioni d'ingresso." }
   ],
   template: [
     { categoria: "00-base", file: "slide-vuota.html", titolo: "Slide vuota",
@@ -106,6 +111,39 @@ window.CATALOGO = {
       dati: "3–6 azioni", dipendenze: [] },
     { categoria: "05-sintesi-executive", file: "matrice-rischi.html", titolo: "Matrice dei rischi",
       quando: "Per il registro dei rischi di un programma con livello, mitigazione e responsabile.",
-      dati: "Rischi con probabilità e impatto (1–5)", dipendenze: [] }
+      dati: "Rischi con probabilità e impatto (1–5)", dipendenze: [] },
+    { categoria: "06-visual", file: "aurora-numero.html", titolo: "Numero protagonista (aurora)",
+      quando: "Per il messaggio chiave di una sezione: un solo numero enorme che si conta da zero, su fondo scuro con luci in movimento.",
+      dati: "Un numero e una frase", dipendenze: [] },
+    { categoria: "06-visual", file: "copertina-editoriale.html", titolo: "Copertina editoriale",
+      quando: "Per copertine di rapporti e aperture: titolo da rivista e disegno generativo a curve di livello.",
+      dati: "Titolo, sottotitolo, indice", dipendenze: [] },
+    { categoria: "06-visual", file: "bento-anno.html", titolo: "Bento",
+      quando: "Per sintesi annuali e cruscotti narrativi: riquadri di misure e colori diversi, ciascuno con un dato.",
+      dati: "4–6 dati con una piccola serie", dipendenze: [] },
+    { categoria: "06-visual", file: "manifesto-svizzero.html", titolo: "Manifesto tipografico",
+      quando: "Per aprire un capitolo o enunciare delle scelte con caratteri grandi e un solo colore forte.",
+      dati: "Un numero, un titolo, tre punti", dipendenze: [] },
+    { categoria: "06-visual", file: "unita-punti.html", titolo: "Racconto a punti",
+      quando: "Per rendere tangibile una percentuale: cento punti, una parte si stacca e si sposta.",
+      dati: "Totale e quota da evidenziare", dipendenze: [] },
+    { categoria: "06-visual", file: "onda-gradiente.html", titolo: "Fascia sfumata",
+      quando: "Per proposte commerciali e nuove offerte, in stile pagina di prodotto.",
+      dati: "Titolo, testo, tre metriche", dipendenze: [] },
+    { categoria: "06-visual", file: "isometrico-livelli.html", titolo: "Livelli isometrici",
+      quando: "Per architetture, modelli operativi e piattaforme a strati.",
+      dati: "3–5 livelli con nota", dipendenze: [] },
+    { categoria: "06-visual", file: "percorso-tappe.html", titolo: "Percorso a tappe",
+      quando: "Per raccontare una roadmap come un viaggio: la strada si disegna attraversando le tappe.",
+      dati: "5–7 tappe con data", dipendenze: [] },
+    { categoria: "06-visual", file: "citazione-voce.html", titolo: "Citazione a tutta pagina",
+      quando: "Per dare voce a interviste e ascolto, con il dato che la sostiene.",
+      dati: "Una frase, chi la dice, un numero", dipendenze: [] },
+    { categoria: "06-visual", file: "sfondo-animato.html", titolo: "Sfondo animato 3D",
+      quando: "Per aperture e messaggi d'impatto su sfondo animato in WebGL; dieci effetti tra cui scegliere con ?effetto=nome.",
+      dati: "Titolo e testo", dipendenze: ["Vanta.js", "three.js"] },
+    { categoria: "06-visual", file: "numeri-motion.html", titolo: "Tre numeri animati",
+      quando: "Per i numeri chiave di un piano: ingresso a cascata, conteggio e barre che crescono.",
+      dati: "Tre valori con titolo e nota", dipendenze: ["Motion"] }
   ]
 };

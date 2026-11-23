@@ -14,6 +14,7 @@
   .tools input { width: 320px; font: 15px var(--font); padding: 9px 12px; border: 1px solid var(--rule); border-radius: var(--radius); color: var(--ink); }
   .tools input:focus { outline: 2px solid var(--focus); outline-offset: 1px; border-color: transparent; }
   .tools p { margin: 0; font-size: 13px; color: var(--ink-3); }
+  .tools a { color: var(--focus); }
   kbd { font: 600 12px var(--font); padding: 1px 6px; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 3px; color: var(--ink-2); }
   .layout { display: grid; grid-template-columns: 230px 1fr; gap: 40px; padding: 28px 48px 64px; }
   nav { position: sticky; top: 24px; align-self: start; display: grid; gap: 2px; }
@@ -48,6 +49,7 @@
     <div class="tools">
       <input id="q" type="search" placeholder="Cerca per nome o uso, ad esempio margine" aria-label="Cerca nei template">
       <p>Nei template: <kbd>E</kbd> modifica i testi, <kbd>P</kbd> stampa o salva in PDF</p>
+      <p id="decks"></p>
     </div>
   </header>
   <div class="layout">
@@ -56,7 +58,8 @@
   </div>
 <script src="catalogo.js"></script>
 <script>
-const { categorie, template } = window.CATALOGO;
+const { categorie, template, presentazioni } = window.CATALOGO;
+document.getElementById("decks").innerHTML = "Presentazioni di esempio: " + presentazioni.map(p => `<a href="${p.file}">${p.titolo}</a>`).join(", ");
 const main = document.getElementById("main"), nav = document.getElementById("nav"), q = document.getElementById("q");
 function render(filter) {
   const f = (filter || "").trim().toLowerCase();

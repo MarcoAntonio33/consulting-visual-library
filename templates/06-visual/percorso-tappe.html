@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percorso a tappe</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --bg: #0f3b39; --ink: #f2f7f4; --mute: #a9c5bd; --road: #e8f0ec; --gold: #f2c14e;
+       background: radial-gradient(130% 120% at 85% 10%, #1b5450 0%, var(--bg) 55%, #0a2b29 100%); color: var(--ink); font-family: "Bricolage Grotesque", var(--font); }
+  #road { position: absolute; inset: 0; width: 1280px; height: 720px; }
+  .head { position: absolute; left: 72px; top: 64px; width: 520px; }
+  .head p { font-size: 16px; font-weight: 600; color: var(--mute); }
+  .head h1 { margin-top: 14px; font-size: 56px; line-height: 1; font-weight: 800; letter-spacing: -.035em; }
+  .stop { position: absolute; width: 210px; }
+  .stop time { display: block; font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 4px; }
+  .stop h2 { font-size: 21px; line-height: 1.1; font-weight: 600; letter-spacing: -.01em; }
+  .stop p { margin-top: 4px; font-size: 14px; line-height: 1.38; color: var(--mute); }
+  .stop.past h2 { color: #cfe0da; }
+  .here { position: absolute; transform: translate(-50%, -50%); font-size: 13px; font-weight: 600; color: #0f3b39; background: var(--gold); padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+  #trace { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: trace 2.6s cubic-bezier(.45,.05,.2,1) .2s forwards; }
+  @keyframes trace { to { stroke-dashoffset: 0; } }
+  html.still #trace { animation: none; stroke-dashoffset: 0; }
+  @media print { #trace { animation: none; stroke-dashoffset: 0; } }
+</style>
+</head>
+<body class="cvl">
+<main class="slide art s">
+  <svg id="road" viewBox="0 0 1280 720" aria-hidden="true"></svg>
+  <div class="head">
+    <p class="in">Il percorso 2027–2029</p>
+    <h1 class="in" style="--d:.1s">Sei tappe dal piano al nuovo modello a regime</h1>
+  </div>
+  <div id="stops"></div>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   t: posizione lungo il percorso (0 = inizio, 1 = fine); lato: "su", "giu" o "sx" (a sinistra del punto);
+   distanza: facoltativa, scosta l'etichetta dal punto (px) */
+const TAPPE = [
+  { t: .04, data: "Gennaio 2027", titolo: "Avvio del programma", testo: "Responsabile nominato, gara bandita", lato: "su", fatto: true, distanza: 84 },
+  { t: .22, data: "Giugno 2027", titolo: "Pilota in due sedi", testo: "Nuovi processi e ruoli in esercizio", lato: "giu" },
+  { t: .40, data: "Dicembre 2027", titolo: "Gestionale attivo", testo: "Un solo sistema per tutte le sedi", lato: "su" },
+  { t: .58, data: "Giugno 2028", titolo: "Centro servizi unico", testo: "Back office accentrato", lato: "giu" },
+  { t: .76, data: "Gennaio 2029", titolo: "Offerta digitale completa", testo: "Tre linee di servizio sul mercato", lato: "giu" },
+  { t: .96, data: "Dicembre 2029", titolo: "Modello a regime", testo: "Benefici pieni dal 2031", lato: "sx" }
+];
+const OGGI = .1;   // posizione della data odierna sul percorso
+/* ======================== */
+const S = CVL.svg, svg = document.getElementById("road");
+const D = "M 60 640 C 260 640, 300 470, 470 470 S 640 610, 790 560 S 960 330, 1080 330 S 1230 230, 1250 170";
+S("path", { d: D, fill: "none", stroke: "rgba(255,255,255,.12)", "stroke-width": 18, "stroke-linecap": "round" }, svg);
+const trace = S("path", { id: "trace", d: D, fill: "none", stroke: "#e8f0ec", "stroke-width": 3, "stroke-linecap": "round" }, svg);
+const L = trace.getTotalLength(); trace.style.setProperty("--len", Math.ceil(L));
+const stops = document.getElementById("stops");
+TAPPE.forEach((s, i) => {
+  const p = trace.getPointAtLength(s.t * L);
+  S("circle", { cx: p.x, cy: p.y, r: 11, fill: s.fatto ? "#f2c14e" : "#0f3b39", stroke: s.fatto ? "#f2c14e" : "#e8f0ec", "stroke-width": 3 }, svg);
+  const up = s.lato === "su", sx = s.lato === "sx", dist = s.distanza || 50;
+  if (!sx) S("line", { x1: p.x, x2: p.x, y1: up ? p.y - 16 : p.y + 16, y2: up ? p.y - dist + 6 : p.y + dist - 6, stroke: "rgba(232,240,236,.35)", "stroke-width": 1 }, svg);
+  const left = sx ? p.x - 250 : Math.min(Math.max(p.x - 20, 40), 1280 - 230);
+  const pos = sx ? `top:${p.y - 12}px;text-align:right` : up ? `bottom:${720 - p.y + dist}px` : `top:${p.y + dist}px`;
+  stops.insertAdjacentHTML("beforeend", `<div class="stop in ${s.fatto ? "past" : ""}" style="--d:${.6 + i * .25}s;left:${left}px;${pos}">
+    <time>${s.data}</time><h2>${s.titolo}</h2><p>${s.testo}</p></div>`);
+});
+const h = trace.getPointAtLength(OGGI * L);
+stops.insertAdjacentHTML("beforeend", `<span class="here fade" style="left:${h.x}px;top:${h.y}px;--d:.6s">Oggi</span>`);
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sfondo animato 3D (Vanta)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { background: #0a1433; color: #fff; font-family: "Hanken Grotesk", var(--font); }
+  #bg { position: absolute; inset: 0; }
+  .veil { background: linear-gradient(90deg, rgba(10,20,51,.85) 0%, rgba(10,20,51,.35) 55%, rgba(10,20,51,0) 100%); pointer-events: none; }
+  .copy { position: absolute; left: 72px; top: 50%; transform: translateY(-50%); width: 620px; }
+  .copy p.k { font-size: 18px; font-weight: 500; color: #aebbe3; }
+  .copy h1 { margin-top: 14px; font-size: 76px; line-height: 1; font-weight: 700; letter-spacing: -.035em; }
+  .copy p.d { margin-top: 24px; font-size: 22px; line-height: 1.45; font-weight: 300; color: #d9e0f5; max-width: 520px; }
+  .credit { position: absolute; right: 24px; bottom: 18px; font-size: 11px; color: rgba(255,255,255,.45); font-family: var(--font); }
+</style>
+</head>
+<body class="cvl" data-attesa>
+<main class="slide art s">
+  <div id="bg" aria-hidden="true"></div>
+  <div class="layer veil" aria-hidden="true"></div>
+  <div class="copy">
+    <p class="k in">Il nuovo modello operativo</p>
+    <h1 class="in" style="--d:.1s">Tutto collegato, una sola volta</h1>
+    <p class="d in" style="--d:.3s">Sedi, centro servizi e clienti lavorano sugli stessi dati, in tempo reale. Nessuna pratica ricopiata, nessun controllo doppio.</p>
+  </div>
+  <p class="credit">Sfondo: Vanta.js (MIT)</p>
+</main>
+<script src="../../assets/slide.js"></script>
+<script src="../../vendor/vanta/three.min.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   Effetti disponibili: NET, WAVES, FOG, GLOBE, HALO, DOTS, BIRDS, RINGS, CELLS, CLOUDS.
+   Per provarli senza toccare il file: aggiungere ?effetto=waves all'indirizzo. */
+const EFFETTO = (new URLSearchParams(location.search).get("effetto") || "NET").toUpperCase();
+const PRESET = {   // colori allineati al tema: blu notte, blu di evidenza, viola, verde acqua
+  NET:    { color: 0x3987e5, backgroundColor: 0x0a1433, points: 11, maxDistance: 21, spacing: 17 },
+  WAVES:  { color: 0x0d2a5c, shininess: 40, waveHeight: 18, waveSpeed: .6, zoom: .9 },
+  FOG:    { highlightColor: 0x7b61ff, midtoneColor: 0x2a78d6, lowlightColor: 0x19c3b0, baseColor: 0x0a1433, blurFactor: .6, speed: .9, zoom: .8 },
+  GLOBE:  { color: 0x3987e5, color2: 0x19c3b0, backgroundColor: 0x0a1433, size: 1.1 },
+  HALO:   { baseColor: 0x2a78d6, backgroundColor: 0x0a1433, amplitudeFactor: 1.2, size: 1.3 },
+  DOTS:   { color: 0x3987e5, color2: 0x19c3b0, backgroundColor: 0x0a1433, size: 3, spacing: 30, showLines: false },
+  BIRDS:  { backgroundColor: 0x0a1433, color1: 0x2a78d6, color2: 0x19c3b0, quantity: 3, birdSize: 1.2 },
+  RINGS:  { backgroundColor: 0x0a1433, color: 0x3987e5 },
+  CELLS:  { color1: 0x0a1433, color2: 0x2a78d6, size: 1.6, speed: .8 },
+  CLOUDS: { skyColor: 0x7aa6e0, cloudColor: 0xc7d6ee, sunColor: 0xff9a5a, speed: .8 }
+};
+/* ======================== */
+const nome = PRESET[EFFETTO] ? EFFETTO : "NET";
+const sc = document.createElement("script");
+sc.src = `../../vendor/vanta/vanta.${nome.toLowerCase()}.min.js`;
+sc.onload = () => {
+  const el = document.getElementById("bg");
+  window.effettoVanta = VANTA[nome]({ el, THREE: window.THREE, mouseControls: !CVL.still, touchControls: !CVL.still, gyroControls: false,
+    minHeight: 720, minWidth: 1280, scale: 1, scaleMobile: 1, ...PRESET[nome] });
+};
+document.body.appendChild(sc);
+</script>
+</body>
+</html>

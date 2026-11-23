@@ -18,17 +18,18 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = sorted((ROOT / "templates").glob("*/*.html"))
 OUT = ROOT / "anteprime"
+GL = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]  # WebGL anche senza scheda grafica (sfondi Vanta)
 
 
 def launch(p):
     # Usa Chromium di Playwright; in alternativa un Chrome già installato.
     exe = os.environ.get("CHROME_PATH")
     if exe:
-        return p.chromium.launch(executable_path=exe)
+        return p.chromium.launch(executable_path=exe, args=GL)
     try:
-        return p.chromium.launch()
+        return p.chromium.launch(args=GL)
     except Exception:
-        return p.chromium.launch(channel="chrome")
+        return p.chromium.launch(channel="chrome", args=GL)
 
 
 def main(filters):
@@ -37,7 +38,8 @@ def main(filters):
     with sync_playwright() as p:
         browser = launch(p)
         for f in files:
-            page = browser.new_page(viewport={"width": 1280, "height": 720}, device_scale_factor=1)
+            # "riduci movimento": le slide si fotografano nello stato finale, senza animazioni
+            page = browser.new_page(viewport={"width": 1280, "height": 720}, device_scale_factor=1, reduced_motion="reduce")
             errors = []
             page.on("pageerror", lambda e, errs=errors: errs.append(str(e)))
             page.on("console", lambda m, errs=errors: errs.append(m.text) if m.type == "error" else None)
@@ -46,6 +48,8 @@ def main(filters):
             if page.locator(".chart").count():
                 page.wait_for_selector("body[data-chart-ready]", timeout=10000)
                 page.wait_for_timeout(300)
+            elif page.locator("[data-attesa]").count():
+                page.wait_for_timeout(2000)   # sfondi WebGL e animazioni con libreria
             else:
                 page.wait_for_timeout(150)
             # Testo che esce dal proprio contenitore

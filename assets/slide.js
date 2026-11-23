@@ -119,5 +119,9 @@
     return n;
   }
 
-  window.CVL = { colors: C, font: FONT, fmt: fmt, chart: chart, svg: svg, fit: fit };
+  /* true se le animazioni vanno saltate: "riduci movimento" attivo oppure ?static nell'indirizzo */
+  var still = (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) || /[?&]static\b/.test(location.search);
+  if (still) document.documentElement.classList.add("still");
+
+  window.CVL = { colors: C, font: FONT, fmt: fmt, chart: chart, svg: svg, fit: fit, still: still };
 })();

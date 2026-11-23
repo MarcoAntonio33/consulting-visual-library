@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Racconto a punti (100 unità)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --bg: #f4f2ee; --ink: #1a1d24; --mute: #636a75; --dot: #c9ccd3; --hot: #ff5a36;
+       background: var(--bg); color: var(--ink); font-family: "Schibsted Grotesk", var(--font); }
+  #field { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+  .copy { position: absolute; left: 72px; top: 76px; width: 470px; }
+  .k { font-size: 16px; font-weight: 600; color: var(--mute); }
+  .copy h1 { margin-top: 18px; font-size: 140px; line-height: .86; font-weight: 800; letter-spacing: -.05em; }
+  .copy h1 span { color: var(--hot); }
+  .copy h1 small { display: block; font-size: 40px; letter-spacing: -.02em; font-weight: 600; margin-top: 10px; color: var(--ink); }
+  .copy p { margin-top: 28px; font-size: 21px; line-height: 1.45; color: #383d47; }
+  .copy p b { font-weight: 600; color: var(--ink); }
+  .labels { position: absolute; font-size: 15px; font-weight: 600; }
+  .labels small { display: block; font-weight: 400; color: var(--mute); font-size: 13px; }
+  .foot { position: absolute; left: 72px; bottom: 40px; font-size: 13px; color: var(--mute); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide art s">
+  <svg id="field" role="img" aria-label="Cento punti, uno per richiesta: 35 tornano indietro al cliente"></svg>
+  <div class="copy">
+    <p class="k in">Il viaggio di 100 richieste</p>
+    <h1 class="in" style="--d:.1s"><span>35</span><small>tornano indietro</small></h1>
+    <p class="in" style="--d:.3s">Più di una richiesta su tre viene restituita al cliente perché incompleta. <b>Ognuna aggiunge in media quattro giorni</b> al tempo di risposta.</p>
+  </div>
+  <div class="labels fade" id="lab1" style="--d:1.2s">65 proseguono<small>verso l'istruttoria</small></div>
+  <div class="labels fade" id="lab2" style="--d:2s">35 tornano al cliente<small>documenti mancanti o errati</small></div>
+  <p class="foot fade" style="--d:.6s">Ogni punto è una richiesta. Dati illustrativi, maggio 2026.</p>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== */
+const TOTALE = 100, EVIDENZA = 35;
+/* ======================== */
+const S = CVL.svg, svg = document.getElementById("field"), C = getComputedStyle(document.querySelector(".s"));
+svg.setAttribute("viewBox", "0 0 1280 720");
+const dot = C.getPropertyValue("--dot").trim(), hot = C.getPropertyValue("--hot").trim(), ink = C.getPropertyValue("--ink").trim();
+// griglia 10 × 10 a destra; i punti evidenziati si spostano in un gruppo separato in basso a destra
+const gx = 640, gy = 96, step = 30, r = 10;
+const home = i => [gx + (i % 10) * step, gy + Math.floor(i / 10) * step];
+const pick = new Set(); let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+while (pick.size < EVIDENZA) pick.add(Math.floor(rnd() * TOTALE));
+let k = 0;
+const away = j => [1000 + (j % 7) * 26 + ((Math.floor(j / 7)) % 2) * 13, 470 + Math.floor(j / 7) * 24];
+const dots = [];
+for (let i = 0; i < TOTALE; i++) {
+  const [x, y] = home(i), isHot = pick.has(i), dest = isHot ? away(k++) : [x, y];
+  const c = S("circle", { cx: x, cy: y, r, fill: isHot ? hot : ink }, svg);
+  dots.push({ c, x, y, dest, isHot, i });
+}
+// un sentiero curvo collega la griglia al gruppo che torna indietro
+const path = S("path", { d: "M940 400 C 960 440, 980 450, 1000 462", fill: "none", stroke: hot, "stroke-width": 2, "stroke-dasharray": "3 6", opacity: .8 }, svg);
+const lab1 = document.getElementById("lab1"), lab2 = document.getElementById("lab2");
+lab1.style.left = gx - r + "px"; lab1.style.top = gy + 10 * step + 6 + "px";
+lab2.style.left = "1000px"; lab2.style.top = "596px";
+
+function place(t) {     // t da 0 a 1: comparsa, poi separazione dei punti evidenziati
+  dots.forEach(d => {
+    const appear = Math.min(Math.max((t * 2.2 - d.i / TOTALE * .8), 0), 1);
+    const off = d.isHot ? (d.i % 10) / 50 : 0;
+    const move = Math.min(Math.max((t - .5 - off) / .3, 0), 1), e = move < .5 ? 2 * move * move : 1 - Math.pow(-2 * move + 2, 2) / 2;
+    d.c.setAttribute("r", r * appear);
+    if (d.isHot) { d.c.setAttribute("cx", d.x + (d.dest[0] - d.x) * e); d.c.setAttribute("cy", d.y + (d.dest[1] - d.y) * e); }
+  });
+}
+if (CVL.still) place(1);
+else { const t0 = performance.now() + 200, dur = 2600;
+  const tick = now => { const t = Math.min(Math.max((now - t0) / dur, 0), 1); place(t); if (t < 1) requestAnimationFrame(tick); };
+  place(0); requestAnimationFrame(tick); }
+</script>
+</body>
+</html>

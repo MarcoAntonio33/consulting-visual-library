@@ -16,8 +16,11 @@ Aprire **`index.html`** per sfogliare la galleria con le anteprime.
 | Processi e organizzazione | Processo a fasi (chevron), swimlane, piramide, organigramma, matrice RACI |
 | Roadmap e pianificazione | Roadmap per filoni, timeline, Gantt, fasi e deliverable di una proposta |
 | Sintesi executive | Executive summary, confronto tra opzioni, business case (VAN, TIR e tempo di recupero calcolati), raccomandazioni, matrice dei rischi |
+| Slide visive (stile sito web) | Numero protagonista, copertina editoriale, bento, manifesto tipografico, racconto a punti, fascia sfumata, livelli isometrici, percorso a tappe, citazione a tutta pagina, sfondo animato 3D (Vanta), tre numeri animati (Motion) |
 
-In totale 30 template. Tutti i dati presenti sono **illustrativi**.
+In totale 41 template, più due presentazioni complete. Tutti i dati presenti sono **illustrativi**.
+
+![Slide visive](anteprime/06-visual/aurora-numero.png)
 
 ## Come si usa un template
 
@@ -28,6 +31,12 @@ In totale 30 template. Tutti i dati presenti sono **illustrativi**.
 5. Per PowerPoint o Keynote: incollare il PDF o uno screenshot della slide, oppure usare l'immagine in `anteprime/`.
 
 Ogni slide segue la stessa struttura: un **titolo-messaggio** (una frase che dice cosa concludere, non solo l'argomento), il contenuto, la **fonte** dei dati e il numero di pagina.
+
+### Presentazione in stile sito web (WebSlides)
+
+`presentazioni/webslides-esempio.html` usa [WebSlides](https://github.com/webslides/WebSlides) con il tema della libreria (`assets/webslides-tema.css`): copertina con luci in movimento, metriche, card con illustrazione, citazione, sfondo animato in 3D e una slide della libreria incorporata. Si naviga con le frecce o lo scorrimento; **Esc** mostra l'indice delle slide. Le classi di WebSlides (`bg-primary`, `flexblock metrics`, `card-50`, `text-quote`…) sono descritte nei demo ufficiali su webslides.tv/demos.
+
+Altre risorse visive già verificate (componenti, illustrazioni, foto, sfondi) sono elencate in [`docs/RISORSE-VISIVE.md`](docs/RISORSE-VISIVE.md).
 
 ### Presentare più slide in sequenza
 
@@ -54,6 +63,8 @@ Tutti i colori e il carattere sono definiti in `assets/theme.css`, nella sezione
 | `--pos` / `--neg` | Variazioni favorevoli e sfavorevoli |
 | `--font` | Carattere (incluso: IBM Plex Sans) |
 
+Le slide visive hanno i colori scritti in testa a ciascun file (variabili `--bg`, `--ink`…), perché ognuna ha una propria direzione artistica.
+
 Le serie categoriali `--s1`…`--s8` seguono un ordine verificato per la leggibilità da parte di chi ha difficoltà a distinguere i colori: se si cambiano, mantenere colori ben distinguibili e non usare più di tre serie nello stesso grafico a dispersione.
 
 ## Struttura
@@ -62,12 +73,15 @@ Le serie categoriali `--s1`…`--s8` seguono un ordine verificato per la leggibi
 index.html                 galleria
 catalogo.js                elenco dei template (alimenta la galleria)
 assets/theme.css           stile comune e variabili di brand
+assets/art.css             caratteri e animazioni delle slide visive
+assets/webslides-tema.css  tema della libreria per WebSlides
 assets/slide.js            adattamento allo schermo, tasti E e P, tema dei grafici
 assets/fonts/              IBM Plex Sans (licenza OFL)
 templates/<area>/*.html    i template
 anteprime/<area>/*.png     anteprime generate automaticamente
 presentazioni/             esempio di presentazione con reveal.js
-vendor/                    librerie incluse: ECharts 6.1.0, reveal.js 6.0.2
+vendor/                    librerie incluse: ECharts 6.1.0, reveal.js 6.0.2, WebSlides 1.5.0,
+                           Vanta.js 0.5.24 con three.js r134, Motion 14.14.0
 scripts/                   anteprime ed esportazione
 docs/                      fonti, licenze e regole per nuovi template
 ```

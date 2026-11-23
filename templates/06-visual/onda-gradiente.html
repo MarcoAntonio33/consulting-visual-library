@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fascia sfumata in movimento</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --ink: #0e1a2b; --mute: #556175; --paper: #ffffff;
+       background: var(--paper); color: var(--ink); font-family: "Schibsted Grotesk", var(--font); }
+  /* fascia inclinata con sfumatura viva che scorre */
+  .band { position: absolute; left: -80px; right: -80px; top: -270px; height: 580px; transform: skewY(-9deg); overflow: hidden; }
+  .band canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .nav { position: absolute; left: 72px; right: 72px; top: 40px; display: flex; justify-content: space-between; align-items: center; color: #fff; font-size: 15px; font-weight: 600; }
+  .nav span:last-child { padding: 7px 14px; border-radius: 999px; background: rgba(255,255,255,.2); backdrop-filter: blur(6px); }
+  h1 { position: absolute; left: 72px; top: 118px; width: 760px; color: #fff; font-size: 74px; line-height: 1.0; font-weight: 800; letter-spacing: -.035em; text-shadow: 0 1px 30px rgba(20,10,60,.15); }
+  .lede { position: absolute; left: 72px; top: 452px; width: 520px; font-size: 21px; line-height: 1.45; color: #323d4f; }
+  .metrics { position: absolute; left: 680px; right: 72px; top: 444px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .metrics div { border-left: 2px solid #dfe3ea; padding-left: 16px; }
+  .metrics b { display: block; font-size: 44px; line-height: 1; font-weight: 800; letter-spacing: -.03em; margin-bottom: 8px; }
+  .metrics span { font-size: 14px; line-height: 1.35; color: var(--mute); }
+  .cta { position: absolute; left: 72px; bottom: 48px; display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .cta i { width: 34px; height: 2px; background: var(--ink); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide art s">
+  <div class="band" aria-hidden="true"><canvas id="mesh" width="720" height="360"></canvas></div>
+  <div class="nav fade"><span>Servizi digitali</span><span>Proposta 2027</span></div>
+  <h1 class="in" style="--d:.1s">Il mercato cresce del 18% l'anno. Noi del 4.</h1>
+  <p class="lede in" style="--d:.3s">I clienti chiedono già servizi digitali: portale, assistenza da remoto, cruscotti. Possiamo offrirli sui contratti in essere, senza attendere nuove gare.</p>
+  <div class="metrics">
+    <div class="in" style="--d:.45s"><b>70%</b><span>dei clienti ha chiesto almeno un servizio digitale nel 2026</span></div>
+    <div class="in" style="--d:.55s"><b>7,2</b><span>milioni di ricavi digitali oggi, il 10% del totale</span></div>
+    <div class="in" style="--d:.65s"><b>15</b><span>milioni l'obiettivo al 2029 con il piano</span></div>
+  </div>
+  <p class="cta fade" style="--d:.9s"><i></i>Tre linee di offerta, presentate nelle pagine seguenti</p>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* Sfumatura generativa: macchie di colore che si muovono lentamente. Modificare COLORI per il brand. */
+const COLORI = ["#3a2fd6", "#7b61ff", "#ff7a59", "#ffb547", "#19c3b0", "#2a78d6"];
+const cv = document.getElementById("mesh"), ctx = cv.getContext("2d"), W = cv.width, H = cv.height;
+const blobs = COLORI.map((c, i) => ({ c, x: (i + .5) / COLORI.length * W, y: H * (.3 + .4 * (i % 2)), r: W * .38, p: i * 1.7 }));
+function frame(t) {
+  const base = ctx.createLinearGradient(0, 0, W, H);
+  base.addColorStop(0, COLORI[0]); base.addColorStop(1, COLORI[2]);
+  ctx.fillStyle = base; ctx.fillRect(0, 0, W, H);
+  blobs.forEach(b => {
+    const x = b.x + Math.sin(t / 5200 + b.p) * W * .12, y = b.y + Math.cos(t / 6100 + b.p * 1.3) * H * .22;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, b.r * .8);
+    g.addColorStop(0, b.c + "cc"); g.addColorStop(1, b.c + "00");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  });
+  // velo scuro leggero: garantisce il contrasto del titolo bianco
+  ctx.fillStyle = "rgba(25, 15, 80, .22)"; ctx.fillRect(0, 0, W, H);
+}
+if (CVL.still) frame(8000); else { const loop = t => { frame(t + 8000); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body>
+</html>

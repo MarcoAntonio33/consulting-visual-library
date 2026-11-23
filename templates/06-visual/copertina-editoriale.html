@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copertina editoriale</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --paper: #eef2ee; --ink: #12241f; --mute: #50605a; --cobalt: #2747d6;
+       background: var(--paper); color: var(--ink); font-family: "Newsreader", Georgia, serif; }
+  .art-panel { position: absolute; left: 640px; top: 0; width: 640px; height: 720px; background: #dfe7e1; overflow: hidden; }
+  .art-panel svg { width: 100%; height: 100%; display: block; }
+  .art-panel .contour { fill: none; stroke: var(--cobalt); stroke-width: 1.2; }
+  .art-panel .contour.hi { stroke-width: 2.4; }
+  .mast { position: absolute; left: 64px; top: 52px; right: 700px; display: flex; justify-content: space-between; align-items: baseline;
+          font-family: "IBM Plex Sans", sans-serif; font-size: 14px; color: var(--mute); padding-bottom: 14px; border-bottom: 1px solid #b9c6be; }
+  .mast b { font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 22px; color: var(--ink); }
+  h1 { position: absolute; left: 60px; top: 138px; width: 560px; font-size: 104px; line-height: .94; font-weight: 400; font-style: italic; letter-spacing: -.025em; }
+  .dek { position: absolute; left: 64px; top: 456px; width: 470px; font-size: 25px; line-height: 1.32; color: #2c3d37; }
+  .toc { position: absolute; left: 64px; bottom: 52px; width: 520px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+         font-family: "IBM Plex Sans", sans-serif; font-size: 14px; line-height: 1.35; color: var(--mute); }
+  .toc span { display: block; font-family: "Newsreader", serif; font-size: 34px; line-height: 1; color: var(--cobalt); margin-bottom: 6px; font-variant-numeric: lining-nums; }
+  .draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw 2.4s cubic-bezier(.3,.6,.2,1) forwards; animation-delay: var(--d); }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  html.still .draw { animation: none; stroke-dashoffset: 0; }
+  @media print { .draw { animation: none; stroke-dashoffset: 0; } }
+</style>
+</head>
+<body class="cvl">
+<main class="slide art s">
+  <div class="art-panel" aria-hidden="true"><svg id="topo" viewBox="0 0 640 720"></svg></div>
+
+  <header class="mast fade"><b>Rapporto al consiglio</b><span>Novembre 2026</span></header>
+  <h1 class="in" style="--d:.15s">Fare di più con ciò che abbiamo già</h1>
+  <p class="dek in" style="--d:.45s">Il piano di trasformazione 2027–2029: dove si perde valore oggi e come recuperarlo in tre anni.</p>
+  <nav class="toc in" style="--d:.7s">
+    <div><span>02</span>Dove siamo: costi, tempi e confronto con il settore</div>
+    <div><span>06</span>Cosa proponiamo: tre scelte e il business case</div>
+    <div><span>10</span>Come lo realizziamo: tappe, rischi e decisioni</div>
+  </nav>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* Curve di livello generative: due "rilievi" con contorni irregolari. Cambiare SEME per un disegno diverso. */
+const SEME = 7;
+let s = SEME; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+const svg = document.getElementById("topo");
+function contour(cx, cy, r, ph, k) {
+  const pts = [];
+  for (let i = 0; i < 64; i++) {
+    const a = i / 64 * Math.PI * 2;
+    const rr = r * (1 + .16 * Math.sin(3 * a + ph[0] + k * .08) + .09 * Math.sin(5 * a + ph[1] - k * .05) + .05 * Math.sin(9 * a + ph[2]));
+    pts.push([cx + Math.cos(a) * rr * 1.15, cy + Math.sin(a) * rr]);
+  }
+  // spline chiusa Catmull-Rom → Bézier
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length; i++) {
+    const p0 = pts[(i - 1 + 64) % 64], p1 = pts[i], p2 = pts[(i + 1) % 64], p3 = pts[(i + 2) % 64];
+    d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d + "Z";
+}
+[[410, 240, 24, 21], [120, 640, 14, 19]].forEach(([cx, cy, n, step], h) => {
+  const ph = [rnd() * 6, rnd() * 6, rnd() * 6];
+  for (let k = n; k >= 1; k--) {
+    const p = CVL.svg("path", { d: contour(cx, cy, k * step, ph, k), class: "contour draw" + (k % 5 === 0 ? " hi" : "") }, svg);
+    const len = Math.ceil(p.getTotalLength());
+    p.style.setProperty("--len", len); p.style.setProperty("--d", (0.1 + (n - k) * 0.05 + h * .3) + "s");
+  }
+});
+</script>
+</body>
+</html>

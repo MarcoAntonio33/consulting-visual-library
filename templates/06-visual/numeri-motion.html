@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tre numeri animati (Motion)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<link rel="stylesheet" href="../../assets/art.css">
+<style>
+  .s { --bg: #f6f5f1; --ink: #14171d; --mute: #626873; --line: #d8d6cf; --hot: #2747d6;
+       background: var(--bg); color: var(--ink); font-family: "Schibsted Grotesk", var(--font); }
+  .head { position: absolute; left: 72px; top: 64px; right: 72px; display: flex; justify-content: space-between; align-items: end; gap: 40px; }
+  .head h1 { font-size: 52px; line-height: 1.02; font-weight: 800; letter-spacing: -.035em; max-width: 720px; }
+  .head p { font-size: 15px; color: var(--mute); max-width: 300px; text-align: right; }
+  .cols { position: absolute; left: 72px; right: 72px; bottom: 72px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .col { border-top: 2px solid var(--ink); padding-top: 18px; }
+  .num { font-size: 150px; line-height: .9; font-weight: 800; letter-spacing: -.05em; }
+  .num small { font-size: 44px; letter-spacing: -.02em; margin-left: 4px; }
+  .col h2 { margin-top: 18px; font-size: 21px; line-height: 1.2; font-weight: 600; }
+  .col p { margin-top: 6px; font-size: 15px; line-height: 1.45; color: var(--mute); }
+  .track { margin-top: 22px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .track i { display: block; height: 100%; width: var(--w); background: var(--hot); border-radius: 3px; transform-origin: left; }
+  .col.focus .num { color: var(--hot); }
+</style>
+</head>
+<body class="cvl" data-attesa>
+<main class="slide art s">
+  <div class="head">
+    <h1>Cosa vale il piano, in tre numeri</h1>
+    <p>Valori a regime nel 2031, rispetto al 2026. Dati illustrativi.</p>
+  </div>
+  <div class="cols" id="cols"></div>
+</main>
+<script src="../../assets/slide.js"></script>
+<script src="../../vendor/motion/motion.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== quota: lunghezza della barra (0–100); focus: evidenzia la colonna */
+const NUMERI = [
+  { valore: 9, decimali: 0, unita: "mln €", titolo: "Margine recuperato ogni anno", testo: "Sei milioni su nove arrivano dal back office.", quota: 100, focus: true },
+  { valore: 4.0, decimali: 1, unita: "giorni", titolo: "Tempo medio di risposta", testo: "Oggi servono 6,8 giorni per evadere una pratica.", quota: 59 },
+  { valore: 15, decimali: 0, unita: "mln €", titolo: "Ricavi da servizi digitali", testo: "Il doppio dei 7,2 milioni di oggi.", quota: 48 }
+];
+/* ======================== */
+const cols = document.getElementById("cols");
+NUMERI.forEach((n, i) => cols.insertAdjacentHTML("beforeend", `<div class="col${n.focus ? " focus" : ""}">
+  <div class="num"><span data-i="${i}">${CVL.fmt(n.valore, { minimumFractionDigits: n.decimali, maximumFractionDigits: n.decimali })}</span><small>${n.unita}</small></div>
+  <h2>${n.titolo}</h2><p>${n.testo}</p><div class="track"><i style="--w:${n.quota}%"></i></div></div>`));
+
+// Animazioni con Motion (motion.dev, licenza MIT): ingresso a cascata, conteggio dei numeri, barre che crescono
+if (!CVL.still && window.Motion) {
+  const { animate, stagger } = Motion;
+  // stato iniziale prima dei ritardi, per evitare un lampo dei valori finali
+  document.querySelectorAll(".head > *, .col").forEach(e => e.style.opacity = 0);
+  document.querySelectorAll(".track i").forEach(e => e.style.transform = "scaleX(0)");
+  animate(".head > *", { opacity: [0, 1], y: [24, 0] }, { duration: .8, delay: stagger(.12), ease: [.2, .7, .2, 1] });
+  animate(".col", { opacity: [0, 1], y: [40, 0] }, { duration: .9, delay: stagger(.15, { startDelay: .3 }), ease: [.2, .7, .2, 1] });
+  animate(".track i", { scaleX: [0, 1] }, { duration: 1.2, delay: stagger(.15, { startDelay: .6 }), ease: [.3, .6, .2, 1] });
+  NUMERI.forEach((n, i) => {
+    const el = document.querySelector(`[data-i="${i}"]`);
+    el.textContent = CVL.fmt(0, { minimumFractionDigits: n.decimali, maximumFractionDigits: n.decimali });
+    animate(0, n.valore, { duration: 1.6, delay: .5 + i * .15, ease: [.2, .7, .2, 1],
+      onUpdate: v => el.textContent = CVL.fmt(v, { minimumFractionDigits: n.decimali, maximumFractionDigits: n.decimali }) });
+  });
+}
+</script>
+</body>
+</html>
