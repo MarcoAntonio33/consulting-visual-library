@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grafico a cascata (waterfall)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: auto 1fr; height: 100%; padding-bottom: 8px; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .top p { margin: 0; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Ponte del margine operativo</p>
+    <h1 class="action-title">Senza azioni correttive il margine scenderebbe a 10,1 milioni: il costo del lavoro assorbe tutta la crescita dei volumi</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="top">
+      <p class="small muted">Margine operativo, milioni di euro, 2025 → stima 2026 a politiche invariate</p>
+      <ul class="legend">
+        <li><span class="key" style="--k: var(--brand)"></span>totale</li>
+        <li><span class="key" style="--k: var(--pos)"></span>aumento</li>
+        <li><span class="key" style="--k: var(--neg)"></span>riduzione</li>
+      </ul>
+    </div>
+    <div class="chart" id="chart" role="img" aria-label="Grafico a cascata del margine operativo"></div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; budget 2026 e consuntivo 2025</p>
+    <p class="page">9</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== tipo: "totale" (barra piena dal basso) oppure una variazione con segno */
+const DATI = [
+  { voce: "Margine\n2025",         tipo: "totale", valore: 13.5 },
+  { voce: "Volumi",                valore: 4.6 },
+  { voce: "Prezzi",                valore: -1.4 },
+  { voce: "Costo del\nlavoro",     valore: -5.2 },
+  { voce: "Servizi\nesterni",      valore: -1.0 },
+  { voce: "Efficienze\nsedi",      valore: 0.6 },
+  { voce: "Altro",                 valore: -1.0 },
+  { voce: "Margine 2026\nstimato", tipo: "totale" }   // se il valore manca viene calcolato
+];
+/* ======================== */
+const C = CVL.colors;
+let run = 0; const base = [], bar = [], colors = [], labels = [];
+DATI.forEach(d => {
+  if (d.tipo === "totale") {
+    const v = d.valore ?? run; run = v;
+    base.push(0); bar.push(v); colors.push(C.brand); labels.push(CVL.fmt(v, { minimumFractionDigits: 1 }));
+  } else {
+    const start = run; run += d.valore;
+    base.push(Math.min(start, run)); bar.push(Math.abs(d.valore));
+    colors.push(d.valore >= 0 ? C.pos : C.neg);
+    labels.push((d.valore >= 0 ? "+" : "−") + CVL.fmt(Math.abs(d.valore), { minimumFractionDigits: 1 }));
+  }
+});
+
+CVL.chart("#chart", {
+  grid: { left: 40, right: 16, top: 34, bottom: 46 },
+  tooltip: { trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(23,32,43,.05)" } },
+    formatter: p => { const i = p[0].dataIndex; return `<b>${DATI[i].voce.replace("\n", " ")}</b><br>${labels[i]} mln €`; } },
+  xAxis: { type: "category", data: DATI.map(d => d.voce), axisLabel: { interval: 0, lineHeight: 16 } },
+  yAxis: { type: "value", min: 0, max: 20, interval: 5 },
+  series: [
+    { type: "bar", stack: "w", data: base, itemStyle: { color: "transparent" }, emphasis: { disabled: true }, tooltip: { show: false }, barWidth: 44 },
+    { type: "bar", stack: "w", barWidth: 44, data: bar.map((v, i) => ({ value: v, itemStyle: { color: colors[i], borderRadius: 2 } })),
+      label: { show: true, position: "top", distance: 6, color: C.ink, fontSize: 14, fontWeight: 600, formatter: p => labels[p.dataIndex] } }
+  ]
+});
+</script>
+</body>
+</html>

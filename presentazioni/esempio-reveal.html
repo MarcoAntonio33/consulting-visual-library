@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presentazione di esempio</title>
+<link rel="stylesheet" href="../vendor/reveal/reset.css">
+<link rel="stylesheet" href="../vendor/reveal/reveal.css">
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+  /* Integrazione con reveal.js: ogni slide è un template della libreria caricato in un iframe 1280 × 720 */
+  html, body { background: #dfe3e8; }
+  .reveal { font-family: var(--font); color: var(--ink); }
+  .reveal .slides section { padding: 0; height: 720px; }
+  .reveal iframe.tpl { width: 1280px; height: 720px; border: 0; display: block; background: var(--paper); }
+  /* Slide di copertina e di sezione costruite direttamente qui */
+  .cover { width: 1280px; height: 720px; background: var(--brand); color: #fff; text-align: left; padding: 96px 96px 64px; display: grid; grid-template-rows: auto 1fr auto; }
+  .cover p.kicker { margin: 0; font-size: 16px; color: #dbe6f5; }
+  .cover h1 { margin: 120px 0 0; font-size: 52px; line-height: 1.1; font-weight: 600; letter-spacing: -.02em; max-width: 900px; }
+  .cover h2 { margin: 18px 0 0; font-size: 22px; font-weight: 400; color: #dbe6f5; }
+  .cover footer { font-size: 14px; color: #dbe6f5; display: flex; justify-content: space-between; }
+  .divider { width: 1280px; height: 720px; background: var(--paper); text-align: left; padding: 0 96px; display: flex; flex-direction: column; justify-content: center; border-left: 16px solid var(--brand); }
+  .divider span { font-size: 18px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .divider h2 { margin: 8px 0 0; font-size: 44px; font-weight: 600; letter-spacing: -.015em; color: var(--ink); }
+  .reveal .progress { color: var(--focus); height: 4px; }
+  .reveal .controls { color: var(--brand); }
+</style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+    <section>
+      <div class="cover">
+        <p class="kicker">Documento per il consiglio di amministrazione</p>
+        <div>
+          <h1>Piano di trasformazione 2027–2029</h1>
+          <h2>Sintesi della diagnosi e proposta di intervento</h2>
+        </div>
+        <footer><span>Novembre 2026</span><span>Dati illustrativi</span></footer>
+      </div>
+      <aside class="notes">Copertina. Le note del relatore si aprono con il tasto S.</aside>
+    </section>
+
+    <section><iframe class="tpl" data-src="../templates/05-sintesi-executive/executive-summary.html?embed" title="Executive summary"></iframe></section>
+
+    <section><div class="divider"><span>01</span><h2>Dove siamo</h2></div></section>
+    <section><iframe class="tpl" data-src="../templates/02-performance/benchmark-barre.html?embed" title="Benchmark"></iframe></section>
+    <section><iframe class="tpl" data-src="../templates/02-performance/waterfall.html?embed" title="Ponte del margine"></iframe></section>
+    <section><iframe class="tpl" data-src="../templates/03-processi/swimlane.html?embed" title="Processo attuale"></iframe></section>
+
+    <section><div class="divider"><span>02</span><h2>Cosa proponiamo</h2></div></section>
+    <section><iframe class="tpl" data-src="../templates/01-strategia/ansoff.html?embed" title="Direttrici di crescita"></iframe></section>
+    <section><iframe class="tpl" data-src="../templates/05-sintesi-executive/confronto-opzioni.html?embed" title="Confronto tra opzioni"></iframe></section>
+    <section><iframe class="tpl" data-src="../templates/05-sintesi-executive/business-case.html?embed" title="Business case"></iframe></section>
+
+    <section><div class="divider"><span>03</span><h2>Come lo realizziamo</h2></div></section>
+    <section><iframe class="tpl" data-src="../templates/04-roadmap/roadmap.html?embed" title="Roadmap"></iframe></section>
+    <section><iframe class="tpl" data-src="../templates/05-sintesi-executive/matrice-rischi.html?embed" title="Rischi"></iframe></section>
+    <section><iframe class="tpl" data-src="../templates/05-sintesi-executive/raccomandazioni.html?embed" title="Raccomandazioni"></iframe></section>
+  </div>
+</div>
+<script src="../vendor/reveal/reveal.js"></script>
+<script src="../vendor/reveal/plugin/notes.js"></script>
+<script>
+  // In modalità stampa (?print-pdf) carica subito tutte le slide, altrimenti reveal.js le carica man mano
+  if (/print-pdf/.test(location.search)) document.querySelectorAll("iframe[data-src]").forEach(f => f.src = f.dataset.src);
+  Reveal.initialize({
+    width: 1280, height: 720, margin: 0.02, minScale: 0.2, maxScale: 2,
+    hash: true, slideNumber: false, controls: false, transition: "none", backgroundTransition: "none",
+    center: false, viewDistance: 3, plugins: [RevealNotes]
+  });
+</script>
+</body>
+</html>

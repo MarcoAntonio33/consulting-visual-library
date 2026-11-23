@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagramma di Gantt</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: 1fr auto; gap: 10px; height: 100%; padding-bottom: 12px; }
+  .g { display: grid; grid-template-columns: 300px 1fr; align-content: start; }
+  .g > .h { font-size: 12px; font-weight: 600; color: var(--ink-2); border-bottom: 1px solid var(--ink); padding-bottom: 6px; }
+  .months { display: grid; grid-template-columns: repeat(var(--n), 1fr); border-bottom: 1px solid var(--ink); }
+  .months span { font-size: 12px; color: var(--ink-2); text-align: center; padding-bottom: 6px; }
+  .name { font-size: 13.5px; height: 36px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-right: 14px; border-bottom: 1px solid var(--grid); }
+  .name .tag { font-size: 11px; padding: 0 6px; }
+  .name.phase { font-weight: 600; font-size: 14px; color: var(--brand); height: 38px; border-bottom-color: var(--rule); }
+  .row { position: relative; height: 36px; border-bottom: 1px solid var(--grid);
+         background-image: repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px calc(100% / var(--n))); }
+  .row.phase { height: 38px; border-bottom-color: var(--rule); }
+  .bar { position: absolute; top: 12px; height: 12px; border-radius: 3px; background: var(--focus-soft); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--focus); }
+  .row.phase .bar { top: 16px; height: 6px; background: var(--brand); border-radius: 2px; }
+  .mile { position: absolute; top: 19px; width: 12px; height: 12px; transform: translate(-50%, -50%) rotate(45deg); background: var(--accent); border: 2px solid var(--paper); }
+  .today { position: absolute; top: 0; bottom: 0; border-left: 2px solid var(--accent); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Roadmap <span class="sep">/</span> Pianificazione di dettaglio</p>
+    <h1 class="action-title">Il progetto è in linea con il piano: la diagnosi è chiusa, il disegno è avviato e il pilota partirà a metà aprile</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="g" id="g"></div>
+    <ul class="legend">
+      <li><span class="key" style="--k: var(--focus)"></span>avanzamento</li>
+      <li><span class="key" style="--k: var(--focus-soft)"></span>da completare</li>
+      <li><span class="key" style="--k: var(--accent); transform: rotate(45deg); width: 10px; height: 10px"></span>traguardo</li>
+      <li><span class="key line" style="--k: var(--accent); width: 2px; height: 14px"></span>oggi</li>
+    </ul>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; piano di progetto aggiornato al 15 febbraio 2027</p>
+    <p class="page">23</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   Le settimane partono da 0. fatto: percentuale completata (0–100). traguardo: settimana della tappa. */
+const PIANO = {
+  mesi: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug"], settimanePerMese: 4.33, oggi: 6.5,
+  fasi: [
+    { nome: "Diagnosi", attivita: [
+      { nome: "Interviste e raccolta dati", resp: "Consulenti", da: 0, a: 3, fatto: 100 },
+      { nome: "Analisi e confronto con il settore", resp: "Consulenti", da: 2, a: 5, fatto: 100 } ],
+      traguardo: 5 },
+    { nome: "Disegno", attivita: [
+      { nome: "Laboratori con i responsabili", resp: "Programma", da: 5, a: 9, fatto: 60 },
+      { nome: "Nuovi ruoli e flussi", resp: "Persone", da: 6, a: 11, fatto: 30 },
+      { nome: "Business case", resp: "Controllo", da: 8, a: 12, fatto: 0 } ],
+      traguardo: 12 },
+    { nome: "Pilota", attivita: [
+      { nome: "Preparazione delle sedi", resp: "Sedi", da: 12, a: 16, fatto: 0 },
+      { nome: "Avvio e misurazione", resp: "Sedi", da: 16, a: 26, fatto: 0 },
+      { nome: "Correzioni e lezioni apprese", resp: "Programma", da: 22, a: 29, fatto: 0 } ],
+      traguardo: 29 }
+  ]
+};
+/* ======================== */
+const g = document.getElementById("g"), N = PIANO.mesi.length, TOT = N * PIANO.settimanePerMese;
+g.style.setProperty("--n", N);
+const pct = w => w / TOT * 100;
+let html = `<div class="h">Attività</div><div class="months" style="--n:${N}">${PIANO.mesi.map(m => `<span>${m}</span>`).join("")}</div>`;
+PIANO.fasi.forEach(f => {
+  const da = Math.min(...f.attivita.map(a => a.da)), a = Math.max(...f.attivita.map(x => x.a));
+  html += `<div class="name phase">${f.nome}</div><div class="row phase" style="--n:${N}"><i class="bar" style="left:${pct(da)}%;width:${pct(a - da)}%"></i>
+    ${f.traguardo != null ? `<i class="mile" style="left:${pct(f.traguardo)}%" title="Fine ${f.nome}"></i>` : ""}</div>`;
+  f.attivita.forEach(x => {
+    html += `<div class="name"><span>${x.nome}</span><span class="tag">${x.resp}</span></div>
+      <div class="row" style="--n:${N}"><div class="bar" style="left:${pct(x.da)}%;width:${pct(x.a - x.da)}%" title="${x.nome}: ${x.fatto}% completato"><i style="width:${x.fatto}%"></i></div></div>`;
+  });
+});
+g.innerHTML = html;
+if (PIANO.oggi != null) {
+  // linea "oggi" sopra la sola area del calendario
+  const first = g.querySelector(".row"), last = [...g.querySelectorAll(".row")].pop();
+  const t = document.createElement("div"); t.className = "today";
+  t.style.left = `calc(300px + (100% - 300px) * ${PIANO.oggi / TOT})`; t.style.top = first.offsetTop + "px";
+  t.style.height = (last.offsetTop + last.offsetHeight - first.offsetTop) + "px"; t.style.bottom = "auto";
+  g.style.position = "relative"; g.appendChild(t);
+}
+</script>
+</body>
+</html>

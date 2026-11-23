@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulting Visual Library</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  body.gallery { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+  .top { padding: 40px 48px 28px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto; gap: 24px 48px; align-items: end; }
+  .top h1 { margin: 0; font-size: 34px; font-weight: 600; letter-spacing: -.015em; line-height: 1.1; }
+  .top h1 span { display: block; margin-top: 10px; font-size: 17px; font-weight: 400; letter-spacing: 0; color: var(--ink-2); max-width: 64ch; line-height: 1.45; }
+  .tools { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+  .tools input { width: 320px; font: 15px var(--font); padding: 9px 12px; border: 1px solid var(--rule); border-radius: var(--radius); color: var(--ink); }
+  .tools input:focus { outline: 2px solid var(--focus); outline-offset: 1px; border-color: transparent; }
+  .tools p { margin: 0; font-size: 13px; color: var(--ink-3); }
+  kbd { font: 600 12px var(--font); padding: 1px 6px; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 3px; color: var(--ink-2); }
+  .layout { display: grid; grid-template-columns: 230px 1fr; gap: 40px; padding: 28px 48px 64px; }
+  nav { position: sticky; top: 24px; align-self: start; display: grid; gap: 2px; }
+  nav a { display: flex; justify-content: space-between; padding: 7px 10px; border-radius: var(--radius); color: var(--ink-2); text-decoration: none; font-size: 14px; }
+  nav a:hover { background: var(--panel); color: var(--ink); }
+  nav a:focus-visible { outline: 2px solid var(--focus); }
+  nav a span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  section.cat { margin-bottom: 44px; scroll-margin-top: 24px; }
+  section.cat > header { display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 20px; }
+  section.cat h2 { margin: 0; font-size: 21px; font-weight: 600; }
+  section.cat > header p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px 28px; }
+  .item a.thumb { display: block; aspect-ratio: 16 / 9; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+  .item a.thumb:hover { border-color: var(--ink-3); }
+  .item a.thumb:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .item h3 { margin: 12px 0 4px; font-size: 16px; font-weight: 600; }
+  .item h3 a { color: inherit; text-decoration: none; }
+  .item h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .item p { margin: 0 0 6px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+  .item .meta { font-size: 12.5px; color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .empty { color: var(--ink-2); font-size: 15px; }
+  @media (max-width: 900px) {
+    .top { grid-template-columns: 1fr; padding: 28px 20px; } .tools { align-items: stretch; } .tools input { width: 100%; }
+    .layout { grid-template-columns: 1fr; padding: 20px; } nav { position: static; grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body class="gallery">
+  <header class="top">
+    <h1>Consulting Visual Library<span>Grafiche HTML in formato 16:9 per presentazioni di consulenza: strategia, performance, processi, roadmap e sintesi executive. Ogni template funziona offline e si modifica dal blocco dati in testa al file.</span></h1>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Cerca per nome o uso, ad esempio margine" aria-label="Cerca nei template">
+      <p>Nei template: <kbd>E</kbd> modifica i testi, <kbd>P</kbd> stampa o salva in PDF</p>
+    </div>
+  </header>
+  <div class="layout">
+    <nav id="nav" aria-label="Categorie"></nav>
+    <main id="main"></main>
+  </div>
+<script src="catalogo.js"></script>
+<script>
+const { categorie, template } = window.CATALOGO;
+const main = document.getElementById("main"), nav = document.getElementById("nav"), q = document.getElementById("q");
+function render(filter) {
+  const f = (filter || "").trim().toLowerCase();
+  const match = t => !f || [t.titolo, t.quando, t.dati, t.file].join(" ").toLowerCase().includes(f);
+  main.innerHTML = ""; nav.innerHTML = "";
+  let shown = 0;
+  categorie.forEach(c => {
+    const items = template.filter(t => t.categoria === c.id && match(t));
+    nav.insertAdjacentHTML("beforeend", `<a href="#${c.id}">${c.nome}<span>${items.length}</span></a>`);
+    if (!items.length) return;
+    shown += items.length;
+    main.insertAdjacentHTML("beforeend", `<section class="cat" id="${c.id}"><header><h2>${c.nome}</h2><p>${c.descrizione}</p></header>
+      <div class="grid">${items.map(t => {
+        const href = `templates/${t.categoria}/${t.file}`;
+        const img = `anteprime/${t.categoria}/${t.file.replace(".html", ".png")}`;
+        return `<article class="item">
+          <a class="thumb" href="${href}" aria-label="Apri ${t.titolo}"><img src="${img}" alt="" loading="lazy"></a>
+          <h3><a href="${href}">${t.titolo}</a></h3>
+          <p>${t.quando}</p>
+          <div class="meta"><span>Dati: ${t.dati}</span>${t.dipendenze.map(d => `<span class="tag">${d}</span>`).join("")}</div>
+        </article>`; }).join("")}</div></section>`);
+  });
+  if (!shown) { const p = document.createElement("p"); p.className = "empty"; p.textContent = `Nessun template corrisponde a "${filter}". Prova con un termine più generale.`; main.appendChild(p); }
+}
+q.addEventListener("input", e => render(e.target.value));
+render();
+</script>
+</body>
+</html>

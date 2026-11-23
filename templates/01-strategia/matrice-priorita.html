@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matrice impatto / sforzo</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 660px 1fr; gap: 40px; height: 100%; padding-bottom: 16px; }
+  #plot { width: 660px; height: 100%; }
+  #plot text { font-family: var(--font); }
+  .groups { display: grid; align-content: start; gap: 18px; padding-top: 6px; }
+  .group h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+  .group h2::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--k); }
+  .group ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+  .group li { display: grid; grid-template-columns: 26px 1fr; font-size: 14px; line-height: 1.35; color: var(--ink); }
+  .group li b { font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Strategia <span class="sep">/</span> Prioritizzazione delle iniziative</p>
+    <h1 class="action-title">Quattro iniziative ad alto impatto e basso sforzo possono partire subito, senza attendere il nuovo budget</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <svg id="plot" role="img" aria-label="Matrice impatto e sforzo delle iniziative"></svg>
+    <div class="groups" id="groups"></div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; valutazione del gruppo di lavoro (scala 0–10)</p>
+    <p class="page">2</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== impatto e sforzo su scala 0–10; la soglia divide i quadranti */
+const DATI = {
+  soglia: 5,
+  iniziative: [
+    { nome: "Portale unico per le richieste dei clienti", impatto: 8.6, sforzo: 3.2 },
+    { nome: "Listino prezzi per fasce di servizio",        impatto: 7.4, sforzo: 1.8 },
+    { nome: "Cruscotto settimanale dei margini",            impatto: 6.6, sforzo: 2.6 },
+    { nome: "Accordo quadro con due fornitori chiave",      impatto: 6.0, sforzo: 4.1 },
+    { nome: "Nuovo sistema gestionale unico",               impatto: 9.0, sforzo: 8.4 },
+    { nome: "Acquisizione di un operatore digitale",        impatto: 8.0, sforzo: 9.2 },
+    { nome: "Accademia interna delle competenze",           impatto: 7.0, sforzo: 6.4 },
+    { nome: "Rinnovo grafico del sito",                     impatto: 2.6, sforzo: 2.2 },
+    { nome: "Newsletter mensile ai clienti",                impatto: 3.4, sforzo: 1.2 },
+    { nome: "Certificazione di qualità aggiuntiva",         impatto: 3.0, sforzo: 7.2 }
+  ]
+};
+const QUADRANTI = [
+  { id: "qw", nome: "Vittorie rapide",       test: (i, s) => i >= DATI.soglia && s <  DATI.soglia, colore: CVL.colors.focus },
+  { id: "st", nome: "Progetti strategici",   test: (i, s) => i >= DATI.soglia && s >= DATI.soglia, colore: CVL.colors.brand },
+  { id: "rp", nome: "Da fare se c'è tempo",  test: (i, s) => i <  DATI.soglia && s <  DATI.soglia, colore: CVL.colors.context },
+  { id: "ev", nome: "Da evitare",            test: (i, s) => i <  DATI.soglia && s >= DATI.soglia, colore: CVL.colors.context }
+];
+/* ======================== */
+
+const svgEl = document.getElementById("plot");
+const W = 660, H = svgEl.parentElement.clientHeight - 16; // clientHeight non risente dello zoom della slide
+svgEl.setAttribute("viewBox", `0 0 ${W} ${H}`);
+const m = { l: 44, r: 8, t: 8, b: 40 };
+const pw = W - m.l - m.r, ph = H - m.t - m.b;
+const x = s => m.l + s / 10 * pw, y = i => m.t + (1 - i / 10) * ph;
+const S = CVL.svg, C = CVL.colors;
+
+// quadranti
+const xs = x(DATI.soglia), ys = y(DATI.soglia);
+S("rect", { x: m.l, y: m.t, width: xs - m.l, height: ys - m.t, fill: C.focusSoft, opacity: .55 }, svgEl);
+S("rect", { x: xs, y: m.t, width: m.l + pw - xs, height: ys - m.t, fill: C.panel }, svgEl);
+S("rect", { x: m.l, y: ys, width: xs - m.l, height: m.t + ph - ys, fill: C.panel }, svgEl);
+S("rect", { x: xs, y: ys, width: m.l + pw - xs, height: m.t + ph - ys, fill: C.panel }, svgEl);
+S("line", { x1: xs, x2: xs, y1: m.t, y2: m.t + ph, stroke: C.paper, "stroke-width": 3 }, svgEl);
+S("line", { x1: m.l, x2: m.l + pw, y1: ys, y2: ys, stroke: C.paper, "stroke-width": 3 }, svgEl);
+[["Vittorie rapide", m.l + 12, m.t + 22], ["Progetti strategici", m.l + pw - 12, m.t + 22, "end"],
+ ["Da fare se c'è tempo", m.l + 12, m.t + ph - 12], ["Da evitare", m.l + pw - 12, m.t + ph - 12, "end"]]
+  .forEach(([t, tx, ty, a]) => { const n = S("text", { x: tx, y: ty, "text-anchor": a || "start", "font-size": 14, "font-weight": 600, fill: C.ink2 }, svgEl); n.textContent = t; });
+
+// assi
+const ax = S("text", { x: m.l + pw / 2, y: H - 8, "text-anchor": "middle", "font-size": 13, fill: C.ink2 }, svgEl); ax.textContent = "Sforzo e complessità di realizzazione →";
+const ay = S("text", { x: 0, y: 0, transform: `translate(16 ${m.t + ph / 2}) rotate(-90)`, "text-anchor": "middle", "font-size": 13, fill: C.ink2 }, svgEl); ay.textContent = "Impatto atteso →";
+[["basso", m.l, "start"], ["alto", m.l + pw, "end"]].forEach(([t, tx, a]) => { const n = S("text", { x: tx, y: m.t + ph + 18, "text-anchor": a, "font-size": 12, fill: C.ink3 }, svgEl); n.textContent = t; });
+
+// punti numerati
+const groups = Object.fromEntries(QUADRANTI.map(q => [q.id, []]));
+DATI.iniziative.forEach((d, k) => {
+  const q = QUADRANTI.find(q => q.test(d.impatto, d.sforzo));
+  groups[q.id].push({ n: k + 1, ...d });
+  const g = S("g", { transform: `translate(${x(d.sforzo)} ${y(d.impatto)})` }, svgEl);
+  const t = S("title", {}, g); t.textContent = `${k + 1}. ${d.nome} — impatto ${d.impatto}, sforzo ${d.sforzo}`;
+  S("circle", { r: 13, fill: q.colore, stroke: C.paper, "stroke-width": 2 }, g);
+  const lbl = S("text", { "text-anchor": "middle", dy: "0.35em", "font-size": 12, "font-weight": 600, fill: q.colore === C.context ? C.ink : "#fff" }, g);
+  lbl.textContent = k + 1;
+});
+
+// elenco a destra, raggruppato per quadrante
+const box = document.getElementById("groups");
+QUADRANTI.forEach(q => {
+  if (!groups[q.id].length) return;
+  const div = document.createElement("div"); div.className = "group"; div.style.setProperty("--k", q.colore);
+  div.innerHTML = `<h2>${q.nome}</h2><ol>${groups[q.id].map(d => `<li><b>${d.n}</b><span>${d.nome}</span></li>`).join("")}</ol>`;
+  box.appendChild(div);
+});
+</script>
+</body>
+</html>

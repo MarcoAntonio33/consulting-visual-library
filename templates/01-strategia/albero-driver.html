@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Albero dei driver</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .tree { position: relative; height: 100%; }
+  .tree svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .node {
+    position: absolute; width: 270px; transform: translateY(-50%);
+    background: var(--panel); border-radius: var(--radius); padding: 10px 14px 9px;
+  }
+  .node.root { background: var(--brand); color: #fff; }
+  .node.root .delta, .node.root .name { color: #dbe6f5; }
+  .node.hl { background: var(--paper); outline: 2px solid var(--focus); outline-offset: -2px; }
+  .name { font-size: 14px; font-weight: 500; color: var(--ink-2); }
+  .value { font-size: 21px; font-weight: 600; line-height: 1.2; margin: 1px 0 2px; }
+  .value small { font-size: 13px; font-weight: 400; margin-left: 4px; }
+  .delta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .delta i { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; }
+  .delta i.up { border-bottom: 9px solid var(--c); } .delta i.down { border-top: 9px solid var(--c); }
+  .foot-legend { position: absolute; right: 0; bottom: 6px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Strategia <span class="sep">/</span> Albero dei driver del margine</p>
+    <h1 class="action-title">Il margine operativo cala di 1,1 milioni perché il costo del personale cresce più dei volumi e i prezzi medi scendono</h1>
+  </header>
+
+  <section class="slide-body tree" id="tree">
+    <svg id="links" aria-hidden="true"></svg>
+    <ul class="legend foot-legend">
+      <li><span class="key" style="--k: var(--pos)"></span>variazione favorevole</li>
+      <li><span class="key" style="--k: var(--neg)"></span>variazione sfavorevole</li>
+      <li><span class="key" style="--k: var(--paper); outline: 2px solid var(--focus); outline-offset: -2px"></span>driver da approfondire</li>
+    </ul>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; variazioni rispetto al consuntivo 2025</p>
+    <p class="page">7</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   valore e unità sono testo libero; delta è numerico (serve per la freccia);
+   meglio: "su" se un aumento è positivo, "giu" se è negativo (es. costi);
+   op: operatore che lega i figli (−, +, ×); hl: true evidenzia il nodo */
+const DATI = {
+  nome: "Margine operativo", valore: "12,4", unita: "mln €", delta: -1.1, deltaTxt: "−1,1 mln €", meglio: "su", op: "−",
+  figli: [
+    { nome: "Ricavi", valore: "96,0", unita: "mln €", delta: 3.2, deltaTxt: "+3,2 mln €", meglio: "su", op: "×",
+      figli: [
+        { nome: "Pratiche gestite", valore: "1,82", unita: "mln", delta: 5, deltaTxt: "+5,0%", meglio: "su" },
+        { nome: "Ricavo medio per pratica", valore: "52,7", unita: "€", delta: -1.6, deltaTxt: "−1,6%", meglio: "su", hl: true }
+      ] },
+    { nome: "Costi operativi", valore: "83,6", unita: "mln €", delta: 4.3, deltaTxt: "+4,3 mln €", meglio: "giu", op: "+",
+      figli: [
+        { nome: "Personale", valore: "51,2", unita: "mln €", delta: 3.9, deltaTxt: "+3,9 mln € (+8,2%)", meglio: "giu", hl: true },
+        { nome: "Servizi esterni", valore: "22,1", unita: "mln €", delta: 1.0, deltaTxt: "+1,0 mln €", meglio: "giu" },
+        { nome: "Sedi e struttura", valore: "10,3", unita: "mln €", delta: -0.6, deltaTxt: "−0,6 mln €", meglio: "giu" }
+      ] }
+  ]
+};
+/* ======================== */
+const tree = document.getElementById("tree"), links = document.getElementById("links");
+const Wd = tree.clientWidth, Ht = tree.clientHeight - 40, NODE_W = 270;
+const leaves = []; (function walk(n, d) { n.depth = d; if (!n.figli) leaves.push(n); else n.figli.forEach(c => walk(c, d + 1)); })(DATI, 0);
+const depth = Math.max(...leaves.map(l => l.depth));
+const colX = d => d * (Wd - NODE_W) / depth;
+leaves.forEach((l, i) => l.y = (i + 0.5) * Ht / leaves.length);
+(function place(n) { if (n.figli) { n.figli.forEach(place); n.y = (n.figli[0].y + n.figli[n.figli.length - 1].y) / 2; } })(DATI);
+
+const S = CVL.svg, C = CVL.colors;
+(function draw(n) {
+  const el = document.createElement("div");
+  el.className = "node" + (n.depth === 0 ? " root" : "") + (n.hl ? " hl" : "");
+  el.style.left = colX(n.depth) + "px"; el.style.top = n.y + "px";
+  const good = (n.delta >= 0) === (n.meglio === "su");
+  el.innerHTML = `<div class="name">${n.nome}</div><div class="value">${n.valore}<small>${n.unita}</small></div>
+    <div class="delta" style="--c:${good ? C.pos : C.neg}"><i class="${n.delta >= 0 ? "up" : "down"}"></i>${n.deltaTxt}</div>`;
+  tree.appendChild(el);
+  if (n.figli) {
+    const x1 = colX(n.depth) + NODE_W, x2 = colX(n.depth + 1), xm = (x1 + x2) / 2;
+    n.figli.forEach(c => S("path", { d: `M${x1} ${n.y}H${xm}V${c.y}H${x2}`, fill: "none", stroke: C.context, "stroke-width": 1.5 }, links));
+    if (n.op) {
+      S("circle", { cx: xm, cy: n.y, r: 12, fill: C.paper, stroke: C.context, "stroke-width": 1.5 }, links);
+      const t = S("text", { x: xm, y: n.y, dy: "0.36em", "text-anchor": "middle", "font-size": 16, "font-weight": 600, fill: C.ink2, "font-family": CVL.font }, links);
+      t.textContent = n.op;
+    }
+    n.figli.forEach(draw);
+  }
+})(DATI);
+</script>
+</body>
+</html>

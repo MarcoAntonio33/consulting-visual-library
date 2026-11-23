@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matrice di Ansoff</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 290px; gap: 36px; height: 100%; padding-bottom: 18px; }
+  .ansoff { display: grid; grid-template-columns: 28px 1fr 1fr; grid-template-rows: 1fr 1fr 30px; gap: 10px; }
+  .axis-y { grid-row: 1 / 3; display: grid; grid-template-rows: 1fr 1fr; gap: 10px; }
+  .axis-y span, .axis-x span { font-size: 13px; color: var(--ink-2); font-weight: 500; display: flex; align-items: center; justify-content: center; }
+  .axis-y span { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .axis-x { grid-column: 2 / 4; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cell { background: var(--panel); border-radius: var(--radius); padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .cell .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .cell p { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.4; }
+  .cell .list { margin-top: 4px; }
+  .cell .list li { font-size: 14px; margin-bottom: 3px; }
+  .cell.pick { background: var(--paper); outline: 2px solid var(--focus); outline-offset: -2px; }
+  .risk { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+  .risk b { font-weight: 600; color: var(--ink-2); }
+  .side { display: flex; flex-direction: column; gap: 14px; padding-top: 2px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Strategia <span class="sep">/</span> Direttrici di crescita (Ansoff)</p>
+    <h1 class="action-title">La crescita più conveniente viene dai nuovi servizi venduti ai clienti attuali: rischio contenuto e canali già pronti</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="ansoff">
+      <div class="axis-y"><span>Mercati nuovi</span><span>Mercati attuali</span></div>
+
+      <div class="cell">
+        <div class="head"><h2 class="h-panel">Sviluppo del mercato</h2><span class="risk">Rischio <b>medio</b></span></div>
+        <p>Offerta attuale in nuove aree geografiche o segmenti.</p>
+        <ul class="list"><li>Apertura in due regioni del Nord</li><li>Offerta dedicata alle aziende sanitarie</li></ul>
+      </div>
+      <div class="cell">
+        <div class="head"><h2 class="h-panel">Diversificazione</h2><span class="risk">Rischio <b>alto</b></span></div>
+        <p>Nuovi servizi per nuovi clienti: richiede competenze e canali da costruire.</p>
+        <ul class="list"><li>Piattaforma dati per operatori privati</li></ul>
+      </div>
+      <div class="cell">
+        <div class="head"><h2 class="h-panel">Penetrazione del mercato</h2><span class="risk">Rischio <b>basso</b></span></div>
+        <p>Più quota con l'offerta attuale sui clienti attuali.</p>
+        <ul class="list"><li>Revisione dei prezzi per fasce</li><li>Programma di fidelizzazione per i grandi enti</li></ul>
+      </div>
+      <div class="cell pick">
+        <div class="head"><h2 class="h-panel">Sviluppo dell'offerta</h2><span class="tag focus">Raccomandata</span></div>
+        <p>Nuovi servizi digitali per la base clienti esistente.</p>
+        <ul class="list"><li>Gestione documentale in cloud</li><li>Assistenza remota con livelli di servizio garantiti</li><li>Cruscotti per gli enti committenti</li></ul>
+      </div>
+
+      <div class="axis-x"><span>Servizi attuali</span><span>Servizi nuovi</span></div>
+    </div>
+
+    <aside class="side">
+      <h2 class="h-panel">Perché questa direttrice</h2>
+      <p>Il 70% dei clienti attuali ha già chiesto servizi digitali negli ultimi 12 mesi.</p>
+      <p>I contratti pluriennali permettono di aggiungere moduli senza nuove gare.</p>
+      <p>Investimento stimato in 2,4 milioni di euro, contro i 9 di una diversificazione.</p>
+      <p class="callout">Le altre direttrici restano opzioni per la seconda fase del piano.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; matrice prodotto/mercato di H. I. Ansoff</p>
+    <p class="page">3</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+</body>
+</html>

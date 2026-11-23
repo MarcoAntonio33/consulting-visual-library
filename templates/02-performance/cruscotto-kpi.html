@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cruscotto KPI</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .dash { display: grid; grid-template-rows: auto 1fr; gap: 22px; height: 100%; padding-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .tile { padding: 14px 20px 12px; display: grid; grid-template-rows: auto auto auto 34px; }
+  .tile + .tile { border-left: 1px solid var(--rule); }
+  .tile .label { font-size: 14px; color: var(--ink-2); }
+  .tile .value { font-size: 34px; font-weight: 600; line-height: 1.15; letter-spacing: -.01em; margin-top: 2px; }
+  .tile .value small { font-size: 15px; font-weight: 500; margin-left: 3px; color: var(--ink-2); }
+  .tile .delta { font-size: 13px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  .tile .delta i { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; }
+  .tile .delta i.up { border-bottom: 8px solid var(--c); } .tile .delta i.down { border-top: 8px solid var(--c); }
+  .tile svg { width: 100%; height: 34px; margin-top: 6px; overflow: visible; }
+  .lower { display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; min-height: 0; }
+  .lower h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+  .lower .micro { margin: 0 0 6px; }
+  .chartbox { display: grid; grid-template-rows: auto auto 1fr; min-height: 0; }
+  .table td, .table th { padding: 7px 8px; font-size: 13.5px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Cruscotto direzionale</p>
+    <h1 class="action-title">Ricavi e soddisfazione sono in linea con il piano; i tempi di evasione restano il punto critico del terzo trimestre</h1>
+  </header>
+
+  <section class="slide-body dash">
+    <div class="tiles" id="tiles"></div>
+    <div class="lower">
+      <div class="chartbox">
+        <h2>Ricavi per linea di servizio, gennaio–settembre</h2>
+        <p class="micro">Milioni di euro; 2026 a confronto con lo stesso periodo del 2025</p>
+        <div class="chart" id="chart" role="img" aria-label="Ricavi per linea di servizio, 2025 e 2026"></div>
+      </div>
+      <div>
+        <h2>Indicatori operativi</h2>
+        <p class="micro">Stato rispetto all'obiettivo del trimestre</p>
+        <table class="table">
+          <thead><tr><th>Indicatore</th><th class="r">Valore</th><th class="r">Obiettivo</th><th>Stato</th></tr></thead>
+          <tbody>
+            <tr><td>Tempo medio di evasione</td><td class="r">6,8 gg</td><td class="r">5,0 gg</td><td><span class="rag critical">Fuori obiettivo</span></td></tr>
+            <tr><td>Pratiche in arretrato</td><td class="r">4.120</td><td class="r">3.000</td><td><span class="rag serious">A rischio</span></td></tr>
+            <tr><td>Richieste risolte al primo contatto</td><td class="r">71%</td><td class="r">75%</td><td><span class="rag warning">Da presidiare</span></td></tr>
+            <tr><td>Disponibilità dei sistemi</td><td class="r">99,6%</td><td class="r">99,5%</td><td><span class="rag good">In linea</span></td></tr>
+            <tr><td>Ore di formazione per addetto</td><td class="r">14</td><td class="r">12</td><td><span class="rag good">In linea</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; sistema di controllo di gestione, dati al 30 settembre</p>
+    <p class="page">8</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== meglio: "su" se un aumento è positivo, "giu" altrimenti; trend: ultimi 12 valori mensili */
+const KPI = [
+  { label: "Ricavi da inizio anno", valore: "71,4", unita: "mln €", delta: 4.1, deltaTxt: "+4,1% sul 2025", meglio: "su",
+    trend: [6.9, 7.2, 7.0, 7.6, 7.8, 7.9, 8.1, 7.7, 8.0, 8.3, 8.2, 8.4] },
+  { label: "Margine operativo", valore: "13,2", unita: "%", delta: -0.6, deltaTxt: "−0,6 punti sul 2025", meglio: "su",
+    trend: [14.1, 13.9, 14.0, 13.6, 13.8, 13.5, 13.4, 13.6, 13.2, 13.1, 13.3, 13.2] },
+  { label: "Soddisfazione clienti", valore: "8,1", unita: "/10", delta: 0.3, deltaTxt: "+0,3 sul 2025", meglio: "su",
+    trend: [7.6, 7.7, 7.7, 7.8, 7.8, 7.9, 7.9, 8.0, 8.0, 8.1, 8.0, 8.1] },
+  { label: "Tempo medio di evasione", valore: "6,8", unita: "giorni", delta: 1.2, deltaTxt: "+1,2 giorni sul 2025", meglio: "giu",
+    trend: [5.4, 5.5, 5.3, 5.6, 5.8, 6.0, 6.1, 6.3, 6.4, 6.6, 6.7, 6.8] }
+];
+const RICAVI = {
+  linee: ["Manutenzione", "Gestione documentale", "Logistica archivi", "Consulenza", "Servizi digitali"],
+  anno1: { nome: "2025", valori: [28.0, 12.1, 7.4, 6.2, 4.9] },
+  anno2: { nome: "2026", valori: [28.6, 12.4, 6.9, 6.3, 7.2] }
+};
+/* ======================== */
+const C = CVL.colors, S = CVL.svg;
+const tiles = document.getElementById("tiles");
+KPI.forEach(k => {
+  const good = (k.delta >= 0) === (k.meglio === "su");
+  const t = document.createElement("div"); t.className = "tile";
+  t.innerHTML = `<span class="label">${k.label}</span><span class="value">${k.valore}<small>${k.unita}</small></span>
+    <span class="delta" style="--c:${good ? C.pos : C.neg}"><i class="${k.delta >= 0 ? "up" : "down"}"></i>${k.deltaTxt}</span>`;
+  const svg = S("svg", { viewBox: "0 0 240 34", preserveAspectRatio: "none", role: "img", "aria-label": `Andamento degli ultimi 12 mesi: ${k.label}` }, t);
+  const mn = Math.min(...k.trend), mx = Math.max(...k.trend), n = k.trend.length;
+  const px = i => 4 + i * (232 / (n - 1)), py = v => 30 - (v - mn) / ((mx - mn) || 1) * 26;
+  S("polyline", { points: k.trend.map((v, i) => `${px(i)},${py(v)}`).join(" "), fill: "none", stroke: C.context, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", "vector-effect": "non-scaling-stroke" }, svg);
+  S("circle", { cx: px(n - 1), cy: py(k.trend[n - 1]), r: 4, fill: C.focus, stroke: C.paper, "stroke-width": 2 }, svg);
+  tiles.appendChild(t);
+});
+
+CVL.chart("#chart", {
+  grid: { left: 150, right: 48, top: 30, bottom: 8 },
+  legend: { top: 0, left: 150, itemWidth: 12, itemHeight: 12, icon: "roundRect", textStyle: { color: C.ink2, fontSize: 13 } },
+  tooltip: { trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(23,32,43,.05)" } }, valueFormatter: v => CVL.fmt(v) + " mln €" },
+  xAxis: { type: "value", show: false },
+  yAxis: { type: "category", inverse: true, data: RICAVI.linee, axisLine: { show: false } },
+  series: [RICAVI.anno1, RICAVI.anno2].map((a, i) => ({
+    name: a.nome, type: "bar", data: a.valori, barWidth: 12, barGap: "20%",
+    itemStyle: { color: i === 0 ? C.context : C.focus, borderRadius: [0, 4, 4, 0] },
+    label: { show: i === 1, position: "right", color: C.ink, fontSize: 12, formatter: p => CVL.fmt(p.value) }
+  }))
+});
+</script>
+</body>
+</html>

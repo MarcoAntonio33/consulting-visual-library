@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fasi, attività e deliverable</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .grid { display: grid; grid-template-columns: 130px repeat(4, 1fr); grid-template-rows: auto auto auto 1fr auto auto; column-gap: 12px; height: 100%; padding-bottom: 14px; }
+  .ph { background: var(--brand); color: #fff; border-radius: var(--radius); padding: 10px 14px; }
+  .ph b { display: block; font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .ph span { font-size: 12.5px; color: #dbe6f5; }
+  .rl { font-size: 13px; font-weight: 600; color: var(--ink-2); padding-top: 12px; border-top: 1px solid var(--rule); }
+  .cell { padding: 12px 0 10px; border-top: 1px solid var(--rule); font-size: 14px; line-height: 1.4; }
+  .cell .list li { font-size: 14.5px; margin-bottom: 6px; }
+  .cell.deliv { font-weight: 500; }
+  .cell.deliv .list > li::before { background: var(--focus); }
+  .weeks { display: flex; gap: 3px; margin-top: 2px; }
+  .weeks i { flex: 1; height: 6px; border-radius: 2px; background: var(--panel-2); }
+  .weeks i.on { background: var(--focus); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Roadmap <span class="sep">/</span> Proposta di intervento</p>
+    <h1 class="action-title">Quattro fasi in 16 settimane, ciascuna chiusa da un deliverable che il committente approva prima di proseguire</h1>
+  </header>
+
+  <section class="slide-body grid" id="grid"></section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: proposta tecnica; tempi indicativi dalla data di avvio</p>
+    <p class="page">24</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== settimane: [inizio, fine] su un totale di TOT_SETTIMANE */
+const TOT_SETTIMANE = 16;
+const FASI = [
+  { nome: "Ascolto", settimane: [1, 3],
+    obiettivo: "Raccogliere bisogni e aspettative dei portatori di interesse",
+    attivita: ["Incontri con la committenza", "Interviste a 15 portatori di interesse", "Analisi dei documenti esistenti", "Mappa dei portatori di interesse"],
+    coinvolgimento: "Incontro di avvio e 2 ore per le interviste ai dirigenti", deliverable: ["Quadro dei bisogni"] },
+  { nome: "Analisi", settimane: [4, 7],
+    obiettivo: "Misurare lo stato attuale e confrontarlo con esperienze simili",
+    attivita: ["Analisi dei dati disponibili", "Confronto con tre casi di riferimento", "Visita a un caso di riferimento", "Laboratorio di verifica"],
+    coinvolgimento: "Accesso ai dati e un laboratorio di mezza giornata", deliverable: ["Rapporto di analisi", "Casi di riferimento"] },
+  { nome: "Progettazione", settimane: [8, 13],
+    obiettivo: "Definire il modello, le azioni e le risorse necessarie",
+    attivita: ["Disegno del modello di servizio", "Piano delle azioni e dei costi", "Due laboratori di co-progettazione", "Verifica di fattibilità"],
+    coinvolgimento: "Due laboratori e la revisione del piano economico", deliverable: ["Progetto esecutivo", "Piano economico"] },
+  { nome: "Accompagnamento", settimane: [14, 16],
+    obiettivo: "Preparare l'avvio e il monitoraggio",
+    attivita: ["Formazione del gruppo interno", "Indicatori e cruscotto", "Presentazione finale"],
+    coinvolgimento: "Gruppo interno di 4–6 persone per la formazione", deliverable: ["Piano di avvio", "Cruscotto di monitoraggio"] }
+];
+/* ======================== */
+const g = document.getElementById("grid");
+const bar = ([a, b]) => `<div class="weeks">${Array.from({ length: TOT_SETTIMANE }, (_, i) => `<i class="${i + 1 >= a && i + 1 <= b ? "on" : ""}"></i>`).join("")}</div>`;
+let h = `<div></div>` + FASI.map(f => `<div class="ph"><b>${f.nome}</b><span>settimane ${f.settimane[0]}–${f.settimane[1]}</span></div>`).join("");
+h += `<div class="rl" style="border:0;padding-top:8px">Calendario</div>` + FASI.map(f => `<div class="cell" style="border:0;padding-top:10px">${bar(f.settimane)}</div>`).join("");
+h += `<div class="rl">Obiettivo</div>` + FASI.map(f => `<div class="cell strong">${f.obiettivo}</div>`).join("");
+h += `<div class="rl">Attività</div>` + FASI.map(f => `<div class="cell"><ul class="list">${f.attivita.map(a => `<li>${a}</li>`).join("")}</ul></div>`).join("");
+h += `<div class="rl">Impegno del committente</div>` + FASI.map(f => `<div class="cell muted small">${f.coinvolgimento}</div>`).join("");
+h += `<div class="rl">Deliverable</div>` + FASI.map(f => `<div class="cell deliv"><ul class="list">${f.deliverable.map(a => `<li>${a}</li>`).join("")}</ul></div>`).join("");
+g.innerHTML = h;
+</script>
+</body>
+</html>

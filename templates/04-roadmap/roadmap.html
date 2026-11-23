@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmap per filoni di lavoro</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: 1fr auto; gap: 10px; height: 100%; padding-bottom: 12px; }
+  .rm { position: relative; display: grid; grid-template-columns: 200px 1fr; grid-template-rows: 44px; grid-auto-rows: 1fr; }
+  .years, .qs { display: grid; grid-template-columns: repeat(var(--n), 1fr); }
+  .hdr { grid-column: 2; display: grid; grid-template-rows: 22px 22px; border-bottom: 1px solid var(--ink); }
+  .years span { font-size: 13px; font-weight: 600; color: var(--ink); padding-left: 8px; border-left: 1px solid var(--rule); }
+  .qs span { font-size: 12px; color: var(--ink-3); padding-left: 8px; border-left: 1px solid var(--rule); }
+  .lane-name { display: flex; flex-direction: column; justify-content: center; padding-right: 16px; border-bottom: 1px solid var(--rule); }
+  .lane-name b { font-size: 15px; font-weight: 600; line-height: 1.25; }
+  .lane-name span { font-size: 12px; color: var(--ink-3); }
+  .lane { position: relative; border-bottom: 1px solid var(--rule);
+          background-image: repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px calc(100% / var(--n))); }
+  .item { position: absolute; height: 28px; border-radius: var(--radius); background: var(--focus-soft); color: var(--brand);
+          font-size: 13px; font-weight: 500; line-height: 28px; padding: 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; }
+  .item.key { background: var(--brand); color: #fff; }
+  .ms { z-index: 2; position: absolute; width: 14px; height: 14px; transform: translate(-50%, -50%) rotate(45deg); background: var(--accent); border: 2px solid var(--paper); }
+  .ms-label { position: absolute; transform: translateX(-50%); font-size: 12px; color: var(--ink); white-space: nowrap; font-weight: 500; }
+  .today { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px solid var(--accent); pointer-events: none; z-index: 1; }
+  .today span { position: absolute; top: -2px; left: 6px; font-size: 12px; font-weight: 600; color: var(--accent); background: var(--paper); padding: 0 4px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Roadmap <span class="sep">/</span> Piano di attuazione 2027–2028</p>
+    <h1 class="action-title">Il piano si sviluppa su quattro filoni in due anni; il nuovo gestionale è il passaggio da cui dipendono tutti gli altri</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="rm" id="rm"></div>
+    <ul class="legend">
+      <li><span class="key" style="--k: var(--brand)"></span>iniziativa sul percorso critico</li>
+      <li><span class="key" style="--k: var(--focus-soft)"></span>altra iniziativa</li>
+      <li><span class="key" style="--k: var(--accent); transform: rotate(45deg); width: 10px; height: 10px"></span>traguardo</li>
+    </ul>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; piano di programma, versione di novembre 2026</p>
+    <p class="page">21</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   Le date sono in mesi dall'inizio del periodo (0 = gennaio del primo anno; 24 = fine del secondo anno).
+   Esempio: da: 3, a: 9 → da aprile a settembre del primo anno. critico: true usa il colore pieno. */
+const PERIODO = { annoInizio: 2027, anni: 2, oggi: 1.5 };   // oggi: posizione in mesi; null per nasconderla
+const FILONI = [
+  { nome: "Sistemi e dati", nota: "resp. Sistemi informativi",
+    iniziative: [{ testo: "Scelta del gestionale", da: 0, a: 4, critico: true }, { testo: "Migrazione e avvio", da: 4, a: 12, critico: true }, { testo: "Cruscotti direzionali", da: 12, a: 18 }],
+    traguardi: [{ testo: "Gestionale attivo", mese: 12 }] },
+  { nome: "Processi e organizzazione", nota: "resp. Programma",
+    iniziative: [{ testo: "Disegno del modello", da: 1, a: 5 }, { testo: "Centro servizi unico", da: 12, a: 20, critico: true }],
+    traguardi: [{ testo: "Pilota in due sedi", mese: 8 }] },
+  { nome: "Offerta digitale", nota: "resp. Direzione commerciale",
+    iniziative: [{ testo: "Portale clienti", da: 3, a: 10 }, { testo: "Nuovi servizi gestiti", da: 13, a: 22 }],
+    traguardi: [{ testo: "Primo contratto", mese: 16 }] },
+  { nome: "Persone e competenze", nota: "resp. Persone e organizzazione",
+    iniziative: [{ testo: "Accademia: prima edizione", da: 2, a: 11 }, { testo: "Seconda edizione", da: 14, a: 23 }],
+    traguardi: [{ testo: "120 certificati", mese: 23 }] }
+];
+/* ======================== */
+const rm = document.getElementById("rm"), Q = PERIODO.anni * 4, M = PERIODO.anni * 12;
+rm.style.setProperty("--n", Q);
+let html = `<div></div><div class="hdr"><div class="years" style="--n:${PERIODO.anni}">${Array.from({ length: PERIODO.anni }, (_, i) => `<span>${PERIODO.annoInizio + i}</span>`).join("")}</div>
+  <div class="qs" style="--n:${Q}">${Array.from({ length: Q }, (_, i) => `<span>T${i % 4 + 1}</span>`).join("")}</div></div>`;
+FILONI.forEach((f, i) => {
+  html += `<div class="lane-name"><b>${f.nome}</b><span>${f.nota}</span></div><div class="lane" id="lane${i}"></div>`;
+});
+rm.innerHTML = html;
+const pct = m => m / M * 100;
+FILONI.forEach((f, i) => {
+  const lane = document.getElementById("lane" + i);
+  f.iniziative.forEach(it => lane.insertAdjacentHTML("beforeend",
+    `<div class="item${it.critico ? " key" : ""}" style="left:calc(${pct(it.da)}% + 2px);width:calc(${pct(it.a - it.da)}% - 4px);top:calc(50% - 26px)" title="${it.testo}">${it.testo}</div>`));
+  (f.traguardi || []).forEach(t => lane.insertAdjacentHTML("beforeend",
+    `<i class="ms" style="left:${pct(t.mese)}%;top:calc(50% + 18px)" title="${t.testo}"></i><span class="ms-label" style="left:${pct(t.mese)}%;top:calc(50% + 28px)">${t.testo}</span>`));
+});
+if (PERIODO.oggi != null) {
+  const first = document.getElementById("lane0");
+  const t = document.createElement("div"); t.className = "today";
+  t.style.left = `calc(200px + (100% - 200px) * ${PERIODO.oggi / M})`; t.style.top = "22px";
+  t.innerHTML = "<span>Oggi</span>"; rm.appendChild(t);
+}
+</script>
+</body>
+</html>

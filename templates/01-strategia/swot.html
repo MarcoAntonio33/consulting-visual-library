@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analisi SWOT</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .swot { display: grid; grid-template-columns: 1fr 300px; gap: 32px; height: 100%; padding: 4px 0 20px; }
+  .matrix { display: grid; grid-template-columns: 28px 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 10px; min-height: 0; }
+  .col-label { font-size: 13px; font-weight: 500; color: var(--ink-2); padding-bottom: 2px; }
+  .row-label { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+  .q { background: var(--panel); border-radius: var(--radius); padding: 14px 18px 12px; border-top: 3px solid var(--q, var(--focus)); }
+  .q.harm { --q: var(--neg); }
+  .q .list li { font-size: 15px; line-height: 1.38; margin-bottom: 5px; }
+  .so-what { display: flex; flex-direction: column; gap: 16px; padding-top: 22px; }
+  .so-what ol { margin: 0; padding: 0; list-style: none; counter-reset: i; display: grid; gap: 14px; }
+  .so-what li { counter-increment: i; display: grid; grid-template-columns: 26px 1fr; font-size: 15px; line-height: 1.4; }
+  .so-what li::before { content: counter(i); font-weight: 600; color: var(--brand); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Strategia <span class="sep">/</span> Analisi SWOT</p>
+    <h1 class="action-title">La solidità della base clienti può finanziare l'ingresso nei servizi digitali, ma il ritardo sulle competenze va colmato entro il 2027</h1>
+  </header>
+
+  <section class="slide-body swot">
+    <div class="matrix">
+      <span></span>
+      <span class="col-label">Favorevoli all'obiettivo</span>
+      <span class="col-label">Sfavorevoli all'obiettivo</span>
+
+      <span class="row-label">Fattori interni</span>
+      <div class="q">
+        <h2 class="h-panel">Punti di forza</h2>
+        <ul class="list">
+          <li>Tasso di rinnovo dei contratti al 92%, stabile da cinque anni</li>
+          <li>Presenza capillare con 14 sedi operative nel Centro-Sud</li>
+          <li>Marchio riconosciuto dagli enti pubblici committenti</li>
+        </ul>
+      </div>
+      <div class="q harm">
+        <h2 class="h-panel">Debolezze</h2>
+        <ul class="list">
+          <li>Solo l'8% del personale ha competenze digitali certificate</li>
+          <li>Sistemi informativi frammentati tra le sedi</li>
+          <li>Margini in calo di 2 punti negli ultimi tre esercizi</li>
+        </ul>
+      </div>
+
+      <span class="row-label">Fattori esterni</span>
+      <div class="q">
+        <h2 class="h-panel">Opportunità</h2>
+        <ul class="list">
+          <li>Fondi per la transizione digitale degli enti locali fino al 2029</li>
+          <li>Domanda crescente di servizi gestiti in modalità continuativa</li>
+          <li>Consolidamento del settore: operatori piccoli in vendita</li>
+        </ul>
+      </div>
+      <div class="q harm">
+        <h2 class="h-panel">Minacce</h2>
+        <ul class="list">
+          <li>Ingresso di operatori nazionali con offerte integrate</li>
+          <li>Pressione sui prezzi nelle gare al massimo ribasso</li>
+          <li>Difficoltà a trattenere i profili tecnici più richiesti</li>
+        </ul>
+      </div>
+    </div>
+
+    <aside class="so-what">
+      <h2 class="h-panel">Cosa ne deriva</h2>
+      <ol>
+        <li>Usare i rinnovi pluriennali come base per vendere servizi digitali ai clienti esistenti</li>
+        <li>Avviare un piano di formazione e certificazione su 120 persone in 18 mesi</li>
+        <li>Valutare l'acquisizione di un operatore specializzato per accelerare</li>
+      </ol>
+      <p class="callout">La finestra utile coincide con il ciclo dei fondi: <strong>decidere entro il primo semestre 2027</strong>.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; interviste al management</p>
+    <p class="page">1</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+</body>
+</html>

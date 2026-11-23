@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bullet graph: risultati rispetto agli obiettivi</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .bullets { display: grid; grid-template-rows: auto repeat(5, 1fr) auto; height: 100%; padding-bottom: 12px; }
+  .row { display: grid; grid-template-columns: 250px 1fr 150px; gap: 28px; align-items: center; border-bottom: 1px solid var(--grid); }
+  .row.head { border-bottom: 2px solid var(--ink); padding-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--ink-2); align-items: end; }
+  .name { font-size: 16px; font-weight: 600; }
+  .name small { display: block; font-size: 13px; font-weight: 400; color: var(--ink-3); }
+  .bar { position: relative; height: 28px; }
+  .band { position: absolute; top: 0; bottom: 0; }
+  .measure { position: absolute; top: 9px; height: 10px; left: 0; background: var(--ink); border-radius: 0 3px 3px 0; }
+  .target { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-left: -1.5px; background: var(--accent); border-radius: 1px; }
+  .scale { position: absolute; top: 32px; font-size: 11px; color: var(--ink-3); transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+  .val { font-size: 15px; font-variant-numeric: tabular-nums; }
+  .val b { font-size: 18px; font-weight: 600; }
+  .val .rag { display: flex; margin-top: 3px; }
+  .legend { padding-top: 12px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Risultati rispetto agli obiettivi</p>
+    <h1 class="action-title">Tre obiettivi su cinque sono già raggiunti; per i tempi di evasione e l'arretrato servono interventi entro dicembre</h1>
+  </header>
+
+  <section class="slide-body bullets" id="bullets">
+    <div class="row head"><span>Indicatore</span><span>Risultato rispetto alle soglie di valutazione</span><span>Valore / obiettivo</span></div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; piano della performance 2026, dati al 30 settembre</p>
+    <p class="page">13</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   fasce: tre soglie dal peggiore al migliore sulla scala [min, max].
+   Per indicatori dove "meno è meglio" (es. tempi) usare inverti: true. */
+const DATI = [
+  { nome: "Ricavi da inizio anno", unita: "mln €", min: 0, max: 100, fasce: [60, 75, 100], valore: 71.4, obiettivo: 70 },
+  { nome: "Soddisfazione clienti", unita: "su 10", min: 5, max: 10, fasce: [7, 8, 10], valore: 8.1, obiettivo: 8 },
+  { nome: "Disponibilità dei sistemi", unita: "%", min: 98, max: 100, fasce: [99, 99.5, 100], valore: 99.6, obiettivo: 99.5 },
+  { nome: "Tempo medio di evasione", unita: "giorni, meno è meglio", min: 0, max: 10, fasce: [4, 6, 10], valore: 6.8, obiettivo: 5, inverti: true },
+  { nome: "Pratiche in arretrato", unita: "migliaia, meno è meglio", min: 0, max: 6, fasce: [2.5, 4, 6], valore: 4.12, obiettivo: 3, inverti: true }
+];
+/* ======================== */
+const box = document.getElementById("bullets");
+const shades = ["#d5dae0", "#e3e7eb", "#f0f2f5"];   // dal peggiore al migliore: più scuro = peggio
+DATI.forEach(d => {
+  const pct = v => (v - d.min) / (d.max - d.min) * 100;
+  const row = document.createElement("div"); row.className = "row";
+  let prev = d.min, bands = "";
+  const order = d.inverti ? [...shades].reverse() : shades;
+  d.fasce.forEach((f, i) => { bands += `<i class="band" style="left:${pct(prev)}%;width:${pct(f) - pct(prev)}%;background:${order[i]}"></i>`; prev = f; });
+  const ticks = [d.min, d.max].map(t => `<span class="scale" style="left:${pct(t)}%">${CVL.fmt(t)}</span>`).join("");
+  const ok = d.inverti ? d.valore <= d.obiettivo : d.valore >= d.obiettivo;
+  row.innerHTML = `<div class="name">${d.nome}<small>${d.unita}</small></div>
+    <div class="bar" title="${d.nome}: ${CVL.fmt(d.valore)} (obiettivo ${CVL.fmt(d.obiettivo)})">${bands}
+      <i class="measure" style="width:${pct(d.valore)}%"></i><i class="target" style="left:${pct(d.obiettivo)}%"></i>${ticks}</div>
+    <div class="val"><b>${CVL.fmt(d.valore, { maximumFractionDigits: 2 })}</b> / ${CVL.fmt(d.obiettivo)}<span class="rag ${ok ? "good" : "critical"}">${ok ? "Raggiunto" : "Non raggiunto"}</span></div>`;
+  box.appendChild(row);
+});
+box.insertAdjacentHTML("beforeend", `<ul class="legend">
+  <li><span class="key" style="--k: var(--ink); height: 6px"></span>risultato</li>
+  <li><span class="key" style="--k: var(--accent); width: 3px; height: 14px"></span>obiettivo</li>
+  <li><span class="key" style="--k: ${shades[0]}"></span><span class="key" style="--k: ${shades[1]}; margin-left:-5px"></span><span class="key" style="--k: ${shades[2]}; margin-left:-5px"></span>fasce: insufficiente, adeguato, buono</li></ul>`);
+</script>
+</body>
+</html>

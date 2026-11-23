@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slide vuota</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  /* Stili propri di questa slide. Il corpo misura 1168 × circa 480 px. */
+  .wrap { display: grid; grid-template-columns: 1fr 300px; gap: 40px; height: 100%; padding-bottom: 14px; }
+  .area { border: 1px dashed var(--rule); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--ink-3); font-size: 14px; }
+  .side { display: flex; flex-direction: column; gap: 14px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Sezione <span class="sep">/</span> Argomento della slide</p>
+    <h1 class="action-title">Il titolo dice il messaggio: una frase completa che il lettore deve ricordare</h1>
+    <p class="subtitle">Sottotitolo facoltativo: unità di misura, periodo, perimetro</p>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="area">Area principale: grafico, schema o tabella</div>
+    <aside class="side">
+      <h2 class="h-panel">Cosa emerge</h2>
+      <p>Prima evidenza a sostegno del titolo.</p>
+      <p>Seconda evidenza, con un numero se possibile.</p>
+      <p class="callout">Implicazione o proposta: <strong>cosa decidere</strong>.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: indicare sempre l'origine dei dati</p>
+    <p class="page">0</p>
+  </footer>
+</main>
+<!-- Per i grafici: <script src="../../vendor/echarts/echarts.min.js"></script> prima di slide.js -->
+<script src="../../assets/slide.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slopegraph prima / dopo</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 300px; gap: 40px; height: 100%; padding-bottom: 12px; }
+  #plot { width: 100%; height: 100%; overflow: visible; }
+  #plot text { font-family: var(--font); }
+  .side { display: flex; flex-direction: column; gap: 14px; padding-top: 34px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Soddisfazione per area di servizio</p>
+    <h1 class="action-title">In tre anni la soddisfazione è salita in quasi tutte le aree; l'assistenza telefonica è l'unica a peggiorare</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <svg id="plot" role="img" aria-label="Soddisfazione per area di servizio, 2023 e 2026"></svg>
+    <aside class="side">
+      <h2 class="h-panel">Cosa è cambiato</h2>
+      <p>Il portale online guadagna 1,9 punti dopo il rilascio delle nuove funzioni nel 2025.</p>
+      <p>L'assistenza telefonica perde 0,9 punti: i tempi di attesa sono raddoppiati con la riduzione del personale.</p>
+      <ul class="legend" style="flex-direction: column; gap: 6px">
+        <li><span class="key line" style="--k: var(--focus)"></span>miglioramento maggiore</li>
+        <li><span class="key line" style="--k: var(--neg)"></span>peggioramento</li>
+        <li><span class="key line" style="--k: var(--context)"></span>altre aree</li>
+      </ul>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; indagine annuale di soddisfazione, punteggio medio 0–10</p>
+    <p class="page">12</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== */
+const DATI = {
+  prima: "2023", dopo: "2026", min: 5.5, max: 8.5,
+  righe: [
+    { nome: "Portale online",           a: 6.0, b: 7.9 },
+    { nome: "Sportelli sul territorio", a: 7.4, b: 7.8 },
+    { nome: "Assistenza tecnica",       a: 7.0, b: 7.4 },
+    { nome: "Fatturazione",             a: 6.5, b: 7.0 },
+    { nome: "Comunicazioni",            a: 6.6, b: 6.9 },
+    { nome: "Assistenza telefonica",    a: 7.1, b: 6.2 }
+  ]
+};
+/* ======================== */
+const S = CVL.svg, C = CVL.colors, svg = document.getElementById("plot");
+const W = svg.parentElement.clientWidth - 340, H = svg.parentElement.clientHeight - 12;
+svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+const xa = 250, xb = W - 250, y0 = 50, bot = H - 16;
+const y = v => y0 + (1 - (v - DATI.min) / (DATI.max - DATI.min)) * (bot - y0);
+
+const best = DATI.righe.reduce((m, r) => (r.b - r.a > m.b - m.a ? r : m));
+const color = r => r === best ? C.focus : (r.b < r.a ? C.neg : C.context);
+const strong = r => color(r) !== C.context;
+
+// intestazioni e assi verticali
+[[xa, DATI.prima], [xb, DATI.dopo]].forEach(([x, t]) => {
+  S("line", { x1: x, x2: x, y1: y0 - 14, y2: bot, stroke: C.rule, "stroke-width": 1 }, svg);
+  const n = S("text", { x, y: 18, "text-anchor": "middle", "font-size": 15, "font-weight": 600, fill: C.ink }, svg); n.textContent = t;
+});
+
+// evita sovrapposizioni delle etichette (distanza minima 20 px)
+function spread(items) {
+  items.sort((p, q) => p.y - q.y);
+  for (let k = 0; k < 40; k++) for (let i = 1; i < items.length; i++) {
+    const d = items[i].y - items[i - 1].y; if (d < 20) { const s = (20 - d) / 2; items[i].y += s; items[i - 1].y -= s; }
+  }
+  return items;
+}
+const L = spread(DATI.righe.map(r => ({ r, y: y(r.a) }))), R = spread(DATI.righe.map(r => ({ r, y: y(r.b) })));
+
+// linee: prima quelle di contesto, poi quelle evidenziate
+[...DATI.righe].sort((p, q) => strong(p) - strong(q)).forEach(r => {
+  const g = S("g", {}, svg);
+  S("title", {}, g).textContent = `${r.nome}: ${CVL.fmt(r.a)} → ${CVL.fmt(r.b)}`;
+  S("line", { x1: xa, y1: y(r.a), x2: xb, y2: y(r.b), stroke: color(r), "stroke-width": strong(r) ? 2.5 : 2, "stroke-linecap": "round" }, g);
+  [[xa, r.a], [xb, r.b]].forEach(([x, v]) => S("circle", { cx: x, cy: y(v), r: 5, fill: color(r), stroke: C.paper, "stroke-width": 2 }, g));
+});
+L.forEach(({ r, y: yy }) => {
+  const t = S("text", { x: xa - 14, y: yy, dy: "0.35em", "text-anchor": "end", "font-size": 14, fill: strong(r) ? C.ink : C.ink2, "font-weight": strong(r) ? 600 : 400 }, svg);
+  t.textContent = `${r.nome}  ${CVL.fmt(r.a, { minimumFractionDigits: 1 })}`;
+});
+R.forEach(({ r, y: yy }) => {
+  const t = S("text", { x: xb + 14, y: yy, dy: "0.35em", "font-size": 14, fill: strong(r) ? C.ink : C.ink2, "font-weight": strong(r) ? 600 : 400 }, svg);
+  t.textContent = `${CVL.fmt(r.b, { minimumFractionDigits: 1 })}  ${r.nome}`;
+});
+</script>
+</body>
+</html>

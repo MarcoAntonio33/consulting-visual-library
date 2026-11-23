@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matrice di portafoglio crescita / quota</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 280px; gap: 36px; height: 100%; padding-bottom: 12px; }
+  .side { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Strategia <span class="sep">/</span> Portafoglio delle linee di business</p>
+    <h1 class="action-title">I servizi digitali crescono al 18% ma hanno una quota ancora marginale: vanno finanziati con la cassa della manutenzione</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="chart" id="chart" role="img" aria-label="Linee di business per crescita del mercato e quota relativa; dimensione delle bolle proporzionale ai ricavi"></div>
+    <aside class="side">
+      <h2 class="h-panel">Come leggere</h2>
+      <p class="micro">Asse orizzontale: quota di mercato rispetto al primo concorrente (1,0 = pari). Asse verticale: crescita annua del mercato. Area delle bolle proporzionale ai ricavi 2026.</p>
+      <p>La manutenzione impianti genera il 46% dei ricavi in un mercato fermo: è la fonte di cassa del piano.</p>
+      <p>I servizi digitali sono l'unica linea in un mercato a due cifre.</p>
+      <p class="callout">Proposta: spostare 1,5 milioni l'anno dalla manutenzione ai servizi digitali.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; schema crescita/quota del Boston Consulting Group</p>
+    <p class="page">6</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== quota relativa (x), crescita % (y), ricavi in milioni (dimensione) */
+const DATI = {
+  sogliaQuota: 1.0, sogliaCrescita: 6,
+  focus: "Servizi digitali",
+  linee: [
+    { nome: "Manutenzione impianti", quota: 2.1, crescita: 1.5, ricavi: 38 },
+    { nome: "Gestione documentale",  quota: 1.4, crescita: 7.5, ricavi: 16 },
+    { nome: "Servizi digitali",      quota: 0.35, crescita: 18, ricavi: 7 },
+    { nome: "Formazione",            quota: 0.6, crescita: 9.5, ricavi: 5 },
+    { nome: "Logistica archivi",     quota: 0.5, crescita: -2, ricavi: 9 },
+    { nome: "Consulenza tecnica",    quota: 1.15, crescita: 3.5, ricavi: 8 }
+  ]
+};
+/* ======================== */
+const C = CVL.colors;
+const maxR = Math.max(...DATI.linee.map(d => d.ricavi));
+const size = r => 18 + Math.sqrt(r / maxR) * 62; // area proporzionale
+const quad = (txt, x, y, align) => ({ type: "text", left: x, top: y, style: { text: txt, fill: C.ink3, font: `500 13px ${CVL.font}`, textAlign: align || "left" } });
+
+CVL.chart("#chart", {
+  grid: { left: 56, right: 24, top: 16, bottom: 52 },
+  tooltip: { trigger: "item", formatter: p => `<b>${p.data.nome}</b><br>Quota relativa ${CVL.fmt(p.data.value[0], {minimumFractionDigits: 2})}<br>Crescita del mercato ${CVL.fmt(p.data.value[1])}%<br>Ricavi ${CVL.fmt(p.data.ricavi)} mln €` },
+  xAxis: { type: "log", logBase: 10, min: 0.2, max: 4, name: "Quota di mercato relativa", nameLocation: "middle", nameGap: 32,
+           axisLabel: { formatter: v => CVL.fmt(v) }, splitLine: { show: false }, axisLine: { show: true, lineStyle: { color: C.rule } } },
+  yAxis: { type: "value", min: -5, max: 25, interval: 5, name: "Crescita del mercato (%)", nameLocation: "middle", nameGap: 40, nameRotate: 90, splitLine: { show: false } },
+  series: [{
+    type: "scatter",
+    data: DATI.linee.map(d => ({ nome: d.nome, ricavi: d.ricavi, value: [d.quota, d.crescita], symbolSize: size(d.ricavi),
+      itemStyle: { color: d.nome === DATI.focus ? C.focus : C.context, borderColor: C.paper, borderWidth: 2, opacity: 0.92 },
+      label: { show: true, position: d.quota > 1.8 ? "left" : "right", distance: 8, formatter: d.nome, color: C.ink, fontSize: 13, fontWeight: d.nome === DATI.focus ? 600 : 400 } })),
+    markLine: { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: C.rule, width: 1, type: "solid" },
+      data: [{ xAxis: DATI.sogliaQuota }, { yAxis: DATI.sogliaCrescita }] }
+  }],
+  graphic: [
+    quad("Punti interrogativi", 70, 22), { ...quad("Stelle", 0, 22), right: 32, left: null },
+    { ...quad("Da riconsiderare", 70, 0), top: null, bottom: 62 }, { ...quad("Generatori di cassa", 0, 0), right: 32, left: null, top: null, bottom: 62 }
+  ]
+});
+</script>
+</body>
+</html>

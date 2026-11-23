@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matrice dei rischi</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 500px 1fr; gap: 44px; height: 100%; padding-bottom: 14px; }
+  .mx { height: 430px; display: grid; grid-template-columns: 26px 24px repeat(5, 1fr); grid-template-rows: repeat(5, 1fr) 24px 22px; gap: 3px; }
+  .yl { grid-column: 1; grid-row: 1 / 6; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+  .xl { grid-column: 3 / 8; grid-row: 7; text-align: center; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+  .tick { font-size: 11px; color: var(--ink-3); display: flex; align-items: center; justify-content: center; }
+  .cell { border-radius: 3px; position: relative; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 4px; }
+  .lv1 { background: #eef1f4; } .lv2 { background: #fdf0cf; } .lv3 { background: #fbdccd; } .lv4 { background: #f5c9c9; }
+  .dot { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: 2px solid var(--paper); }
+  .list-r { display: grid; align-content: start; }
+  .list-r table td { font-size: 13.5px; padding: 8px 8px; }
+  .list-r td.id { width: 34px; }
+  .list-r td.id span { display: inline-flex; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; align-items: center; justify-content: center; }
+  .list-r td.risk b { display: block; font-weight: 600; }
+  .list-r td.risk span { color: var(--ink-2); }
+  .scale { display: flex; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--ink-2); }
+  .scale span { display: inline-flex; align-items: center; gap: 6px; }
+  .scale i { width: 14px; height: 14px; border-radius: 3px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Sintesi <span class="sep">/</span> Rischi del programma</p>
+    <h1 class="action-title">Due rischi richiedono un presidio immediato: i ritardi della migrazione dati e l'uscita di personale chiave</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div>
+      <div class="mx" id="mx" role="img" aria-label="Matrice probabilità e impatto dei rischi"></div>
+      <div class="scale">
+        <span><i class="lv1"></i>basso</span><span><i class="lv2"></i>medio</span><span><i class="lv3"></i>alto</span><span><i class="lv4"></i>critico</span>
+      </div>
+    </div>
+    <div class="list-r"><table class="table" id="tab"></table></div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; registro dei rischi del programma, scala 1–5</p>
+    <p class="page">29</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== probabilita e impatto da 1 a 5 */
+const RISCHI = [
+  { nome: "Ritardi nella migrazione dei dati", mitigazione: "Prova di migrazione su una sede entro il pilota", p: 4, i: 5, chi: "Sistemi informativi" },
+  { nome: "Uscita di personale chiave", mitigazione: "Piano di trattenimento per 25 profili critici", p: 3, i: 5, chi: "Persone e org." },
+  { nome: "Resistenza al cambiamento nelle sedi", mitigazione: "Referenti locali e comunicazione mensile", p: 4, i: 3, chi: "Programma" },
+  { nome: "Ricorso sulla gara del gestionale", mitigazione: "Verifica legale preventiva del capitolato", p: 2, i: 4, chi: "Legale" },
+  { nome: "Benefici inferiori alle attese", mitigazione: "Misure trimestrali e revisione del piano", p: 2, i: 3, chi: "Controllo" },
+  { nome: "Aumento dei costi delle licenze", mitigazione: "Prezzi bloccati per cinque anni nel contratto", p: 3, i: 2, chi: "Acquisti" }
+];
+/* ======================== */
+const level = (p, i) => { const s = p * i; return s >= 15 ? 4 : s >= 9 ? 3 : s >= 5 ? 2 : 1; };
+const mx = document.getElementById("mx");
+let h = `<div class="yl">Probabilità →</div>`;
+for (let p = 5; p >= 1; p--) {
+  h += `<div class="tick" style="grid-column:2;grid-row:${6 - p}">${p}</div>`;
+  for (let i = 1; i <= 5; i++) {
+    const here = RISCHI.map((r, k) => ({ ...r, n: k + 1 })).filter(r => r.p === p && r.i === i);
+    h += `<div class="cell lv${level(p, i)}" style="grid-column:${i + 2};grid-row:${6 - p}">${here.map(r => `<span class="dot" title="${r.nome}">${r.n}</span>`).join("")}</div>`;
+  }
+}
+for (let i = 1; i <= 5; i++) h += `<div class="tick" style="grid-column:${i + 2};grid-row:6">${i}</div>`;
+h += `<div class="xl">Impatto →</div>`;
+mx.innerHTML = h;
+const LV = { 4: "critico", 3: "alto", 2: "medio", 1: "basso" };
+document.getElementById("tab").innerHTML = `<thead><tr><th></th><th>Rischio e mitigazione</th><th>Livello</th><th>Responsabile</th></tr></thead><tbody>` +
+  RISCHI.map((r, k) => `<tr><td class="id"><span>${k + 1}</span></td><td class="risk"><b>${r.nome}</b><span>${r.mitigazione}</span></td>
+    <td>${LV[level(r.p, r.i)]}</td><td>${r.chi}</td></tr>`).join("") + "</tbody>";
+</script>
+</body>
+</html>

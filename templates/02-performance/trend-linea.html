@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andamento nel tempo con proiezione</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: auto 1fr; height: 100%; padding-bottom: 8px; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .top p { margin: 0; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Andamento della quota di mercato</p>
+    <h1 class="action-title">Dopo la riorganizzazione del 2023 la quota è tornata a crescere; con il piano può superare il 15% entro il 2029</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="top">
+      <p class="small muted">Quota di mercato in valore, %, 2018–2026 consuntivo, 2027–2029 proiezione</p>
+      <ul class="legend">
+        <li><span class="key line" style="--k: var(--focus)"></span>Cliente</li>
+        <li><span class="key line" style="--k: var(--context)"></span>Media dei primi cinque concorrenti</li>
+        <li><span class="key line" style="--k: var(--focus); background: repeating-linear-gradient(90deg, var(--focus) 0 5px, transparent 5px 8px)"></span>Proiezione con il piano</li>
+      </ul>
+    </div>
+    <div class="chart" id="chart" role="img" aria-label="Quota di mercato del cliente e media dei concorrenti, 2018–2029"></div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; osservatorio di settore</p>
+    <p class="page">11</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== null = dato assente; la proiezione parte dall'ultimo consuntivo */
+const DATI = {
+  anni:        ["2018","2019","2020","2021","2022","2023","2024","2025","2026","2027","2028","2029"],
+  cliente:     [12.4, 12.1, 11.5, 11.0, 10.6, 10.9, 11.8, 12.6, 13.1, null, null, null],
+  proiezione:  [null, null, null, null, null, null, null, null, 13.1, 13.9, 14.6, 15.3],
+  concorrenti: [10.2, 10.3, 10.1, 10.4, 10.6, 10.7, 10.8, 10.8, 10.9, null, null, null],
+  evento: { anno: "2023", testo: "Riorganizzazione\ndella rete commerciale" }
+};
+/* ======================== */
+const C = CVL.colors;
+const last = (arr) => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return i; };
+const endLabel = (color, fmt) => ({ show: true, position: "right", distance: 10, color: C.ink, fontSize: 13, fontWeight: 600, formatter: fmt });
+
+CVL.chart("#chart", {
+  grid: { left: 40, right: 150, top: 58, bottom: 30 },
+  tooltip: { trigger: "axis", valueFormatter: v => v == null ? "–" : CVL.fmt(v) + "%" },
+  xAxis: { type: "category", data: DATI.anni, boundaryGap: false },
+  yAxis: { type: "value", min: 8, max: 16, interval: 2, axisLabel: { formatter: v => v + "%" } },
+  series: [
+    { name: "Media dei primi cinque concorrenti", type: "line", data: DATI.concorrenti, color: C.context, symbol: "none", z: 1,
+      endLabel: endLabel(C.context, p => `Concorrenti ${CVL.fmt(p.value)}%`) },
+    { name: "Cliente", type: "line", data: DATI.cliente, color: C.focus, symbol: "none", z: 3,
+      markLine: { silent: true, symbol: "none", lineStyle: { color: C.ink3, width: 1, type: "solid" },
+        label: { formatter: DATI.evento.testo, position: "end", color: C.ink2, fontSize: 12, lineHeight: 16, distance: 6 },
+        data: [{ xAxis: DATI.evento.anno }] },
+      markPoint: { symbol: "circle", symbolSize: 10, itemStyle: { color: C.focus, borderColor: C.paper, borderWidth: 2 },
+        label: { show: true, position: "top", distance: 8, color: C.ink, fontSize: 13, fontWeight: 600, formatter: p => CVL.fmt(p.value) + "%" },
+        data: [{ coord: [DATI.anni[last(DATI.cliente)], DATI.cliente[last(DATI.cliente)]], value: DATI.cliente[last(DATI.cliente)] }] },
+      markArea: { silent: true, itemStyle: { color: "rgba(23,32,43,.035)" }, data: [[{ xAxis: DATI.anni[last(DATI.cliente)] }, { xAxis: DATI.anni[DATI.anni.length - 1] }]] } },
+    { name: "Proiezione con il piano", type: "line", data: DATI.proiezione, color: C.focus, z: 2,
+      lineStyle: { type: [6, 4], width: 2 }, symbol: "none",
+      endLabel: endLabel(C.focus, p => `Cliente ${CVL.fmt(p.value)}%`) }
+  ]
+});
+</script>
+</body>
+</html>

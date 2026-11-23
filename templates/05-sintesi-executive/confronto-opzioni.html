@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confronto tra opzioni</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: 1fr auto; gap: 10px; height: 100%; padding-bottom: 12px; }
+  .opt { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 14px; }
+  .opt th, .opt td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+  .opt thead th { border-bottom: 2px solid var(--ink); vertical-align: bottom; }
+  .opt thead th b { display: block; font-size: 16px; font-weight: 600; color: var(--ink); }
+  .opt thead th span { font-size: 13px; font-weight: 400; color: var(--ink-2); }
+  .opt td:first-child { width: 190px; font-weight: 600; color: var(--ink); }
+  .opt td:first-child small { display: block; font-weight: 400; font-size: 12px; color: var(--ink-3); }
+  .opt .cellv { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; line-height: 1.35; }
+  .opt .best { background: var(--focus-soft); }
+  .opt thead th.best { border-radius: var(--radius) var(--radius) 0 0; }
+  .opt tr.total td { border-bottom: 0; font-weight: 600; font-size: 15px; }
+  .opt tr.total td.best { border-radius: 0 0 var(--radius) var(--radius); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Sintesi <span class="sep">/</span> Valutazione delle opzioni</p>
+    <h1 class="action-title">Il gestionale unico in cloud è l'opzione più equilibrata: costa meno dello sviluppo interno e si attiva in metà tempo</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <table class="opt" id="opt"></table>
+    <ul class="legend">
+      <li><span class="harvey" data-v="0"></span> molto sfavorevole</li>
+      <li><span class="harvey" data-v="2"></span> neutro</li>
+      <li><span class="harvey" data-v="4"></span> molto favorevole</li>
+      <li><span class="key" style="--k: var(--focus-soft)"></span>opzione raccomandata</li>
+    </ul>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; offerte preliminari dei fornitori e stime interne</p>
+    <p class="page">26</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== punteggi da 0 a 4 (4 = molto favorevole); peso in % per il punteggio totale */
+const OPZIONI = [
+  { nome: "A. Mantenere i sistemi attuali", nota: "con adeguamenti minimi" },
+  { nome: "B. Gestionale unico in cloud", nota: "soluzione di mercato configurata", raccomandata: true },
+  { nome: "C. Sviluppo interno", nota: "piattaforma su misura" }
+];
+const CRITERI = [
+  { nome: "Costo in 5 anni", peso: 30, valori: [[3, "3,1 mln €, ma costi nascosti"], [3, "4,2 mln €"], [1, "6,8 mln €"]] },
+  { nome: "Tempi di attivazione", peso: 20, valori: [[4, "Immediata"], [3, "12 mesi"], [1, "24 mesi o più"]] },
+  { nome: "Benefici operativi", peso: 30, valori: [[0, "Nessun recupero di efficienza"], [4, "Fino a 9 mln € l'anno"], [4, "Fino a 9 mln € l'anno"]] },
+  { nome: "Rischio di realizzazione", peso: 20, valori: [[2, "Obsolescenza crescente"], [3, "Medio: migrazione dei dati"], [1, "Alto: competenze da costruire"]] }
+];
+/* ======================== */
+const t = document.getElementById("opt");
+const score = j => CRITERI.reduce((s, c) => s + c.valori[j][0] / 4 * c.peso, 0);
+let h = `<thead><tr><th>Criterio <span>(peso)</span></th>${OPZIONI.map(o => `<th class="${o.raccomandata ? "best" : ""}"><b>${o.nome}</b><span>${o.nota}</span>${o.raccomandata ? ` <span class="tag brand" style="margin-left:6px">Raccomandata</span>` : ""}</th>`).join("")}</tr></thead><tbody>`;
+CRITERI.forEach(c => {
+  h += `<tr><td>${c.nome}<small>peso ${c.peso}%</small></td>${c.valori.map(([v, txt], j) =>
+    `<td class="${OPZIONI[j].raccomandata ? "best" : ""}"><div class="cellv"><span class="harvey" data-v="${v}" title="${v} su 4"></span><span>${txt}</span></div></td>`).join("")}</tr>`;
+});
+h += `<tr class="total"><td>Punteggio ponderato</td>${OPZIONI.map((o, j) => `<td class="${o.raccomandata ? "best" : ""}">${CVL.fmt(score(j), { maximumFractionDigits: 0 })} su 100</td>`).join("")}</tr></tbody>`;
+t.innerHTML = h;
+</script>
+</body>
+</html>

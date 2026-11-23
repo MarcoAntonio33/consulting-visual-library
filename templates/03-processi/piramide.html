@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piramide a livelli</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { position: relative; height: 100%; padding-bottom: 14px; }
+  #pyr { position: absolute; left: 0; top: 0; width: 100%; height: calc(100% - 14px); overflow: visible; }
+  #pyr text { font-family: var(--font); }
+  .desc { position: absolute; left: 640px; width: 528px; transform: translateY(-50%); }
+  .desc h2 { margin: 0 0 2px; font-size: 16px; font-weight: 600; }
+  .desc p { margin: 0; font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Processi <span class="sep">/</span> Architettura degli obiettivi</p>
+    <h1 class="action-title">Una visione, tre obiettivi strategici e dodici iniziative: ogni livello si misura con indicatori propri</h1>
+  </header>
+
+  <section class="slide-body wrap" id="wrap">
+    <svg id="pyr" role="img" aria-label="Piramide degli obiettivi in quattro livelli"></svg>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; piano strategico 2027–2029</p>
+    <p class="page">18</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== dall'alto verso il basso */
+const LIVELLI = [
+  { nome: "Visione", testo: "Diventare il riferimento del Sud per i servizi agli enti pubblici entro il 2030", nota: "1 enunciato" },
+  { nome: "Obiettivi strategici", testo: "Crescere nei servizi digitali, ridurre il costo per pratica, trattenere le competenze", nota: "3 obiettivi" },
+  { nome: "Programmi", testo: "Offerta digitale, efficienza operativa, persone e competenze, dati e sistemi", nota: "4 programmi" },
+  { nome: "Iniziative", testo: "Progetti con responsabile, budget e scadenze, rivisti ogni trimestre", nota: "12 iniziative" }
+];
+/* ======================== */
+// scala ordinale di blu: più scuro in cima
+const RAMP = ["#0d366b", "#1c5cab", "#3987e5", "#86b6ef"], INK = ["#fff", "#fff", "#fff", "#17202b"];
+const S = CVL.svg, C = CVL.colors, svg = document.getElementById("pyr"), wrap = document.getElementById("wrap");
+const W = 560, H = wrap.clientHeight - 14, n = LIVELLI.length, gap = 6, lh = (H - gap * (n - 1)) / n, cx = W / 2;
+svg.setAttribute("viewBox", `0 0 ${wrap.clientWidth} ${H}`);
+const half = y => (y / H) * (W / 2);        // semilarghezza della piramide alla quota y
+LIVELLI.forEach((l, i) => {
+  const y1 = i * (lh + gap), y2 = y1 + lh;
+  const pts = i === 0 ? `${cx},${y1} ${cx + half(y2)},${y2} ${cx - half(y2)},${y2}`
+                      : `${cx - half(y1)},${y1} ${cx + half(y1)},${y1} ${cx + half(y2)},${y2} ${cx - half(y2)},${y2}`;
+  S("polygon", { points: pts, fill: RAMP[i % RAMP.length] }, svg);
+  const ty = i === 0 ? y1 + lh * 0.68 : (y1 + y2) / 2;
+  const t = S("text", { x: cx, y: ty - 8, "text-anchor": "middle", "font-size": i === 0 ? 14 : 16, "font-weight": 600, fill: INK[i] }, svg); t.textContent = l.nome;
+  const s = S("text", { x: cx, y: ty + 12, "text-anchor": "middle", "font-size": 13, fill: INK[i], opacity: .9 }, svg); s.textContent = l.nota;
+  // linea guida verso la descrizione
+  const ym = (y1 + y2) / 2;
+  S("line", { x1: cx + half(ym) + 10, x2: 620, y1: ym, y2: ym, stroke: C.rule, "stroke-width": 1 }, svg);
+  S("circle", { cx: cx + half(ym) + 10, cy: ym, r: 3, fill: C.ink3 }, svg);
+  const d = document.createElement("div"); d.className = "desc"; d.style.top = ym + "px";
+  d.innerHTML = `<h2>${l.nome}</h2><p>${l.testo}</p>`; wrap.appendChild(d);
+});
+</script>
+</body>
+</html>

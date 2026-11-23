@@ -1,0 +1,213 @@
+/* ==========================================================================
+   Consulting Visual Library — tema comune
+   Tutte le slide sono tele 1280 × 720 px (16:9). Per adattare la libreria
+   al brand di un cliente basta cambiare le variabili in :root qui sotto.
+   ========================================================================== */
+
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/ibm-plex-sans-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }
+
+:root {
+  /* --- Superfici e testo --- */
+  --paper:   #ffffff;   /* fondo della slide */
+  --panel:   #f3f5f7;   /* riquadri e bande */
+  --panel-2: #e8ecf0;   /* riquadri su riquadri */
+  --rule:    #d5dae0;   /* linee e bordi */
+  --grid:    #e7eaee;   /* griglia dei grafici */
+  --ink:     #17202b;   /* testo principale */
+  --ink-2:   #4a5563;   /* testo secondario */
+  --ink-3:   #69727f;   /* note, assi, fonti */
+
+  /* --- Brand (sostituire con i colori del cliente) --- */
+  --brand:      #0d366b;  /* blu notte: titoli di sezione, totali, elementi strutturali */
+  --focus:      #2a78d6;  /* il dato su cui si vuole attirare l'attenzione */
+  --focus-soft: #cde2fb;  /* versione chiara del focus (fasce, sfondi) */
+  --context:    #bcc3cc;  /* dati di contesto, da mettere in secondo piano */
+  --accent:     #eb6834;  /* richiami puntuali: "oggi", messaggio chiave. Con parsimonia */
+
+  /* --- Serie categoriali (ordine fisso, validato per daltonismo) --- */
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+
+  /* --- Polarità (aumento / riduzione) --- */
+  --pos: #2a78d6;
+  --neg: #e34948;
+
+  /* --- Stato (sempre accompagnato da etichetta testuale) --- */
+  --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+
+  --font: "IBM Plex Sans", "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --radius: 4px;
+}
+
+/* ---------- Pagina che ospita la slide ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body.cvl {
+  background: #dfe3e8;
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+body.cvl.in-frame { background: var(--paper); }
+
+/* ---------- Tela 16:9 ---------- */
+.slide {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 1280px; height: 720px;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  transform-origin: center center;
+  background: var(--paper);
+  padding: 40px 56px 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  font-size: 16px;
+  line-height: 1.45;
+  font-kerning: normal;
+  overflow: hidden;
+}
+body.cvl:not(.in-frame) .slide { box-shadow: 0 1px 2px rgba(23, 32, 43, .08), 0 8px 32px rgba(23, 32, 43, .10); }
+
+/* ---------- Intestazione ---------- */
+.slide-head { padding-bottom: 20px; }
+.tracker {
+  margin: 0 0 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500; color: var(--brand);
+  letter-spacing: .01em;
+}
+.tracker::before { content: ""; width: 24px; height: 4px; background: var(--brand); border-radius: 2px; }
+.tracker .sep { color: var(--ink-3); font-weight: 400; }
+.action-title {
+  margin: 0;
+  max-width: 1040px;
+  font-size: 30px; line-height: 1.2; font-weight: 600;
+  letter-spacing: -.012em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.subtitle {
+  margin: 10px 0 0;
+  max-width: 980px;
+  font-size: 17px; line-height: 1.4; color: var(--ink-2);
+}
+
+/* ---------- Corpo ---------- */
+.slide-body { position: relative; min-height: 0; }
+
+/* ---------- Piede ---------- */
+.slide-foot {
+  display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  height: 44px;
+  border-top: 1px solid var(--rule);
+  font-size: 12px; color: var(--ink-3);
+}
+.slide-foot p { margin: 0; }
+.slide-foot .page { font-variant-numeric: tabular-nums; }
+
+/* ---------- Tipografia di servizio ---------- */
+.h-panel { margin: 0 0 8px; font-size: 18px; line-height: 1.25; font-weight: 600; color: var(--ink); }
+.h-small { margin: 0 0 6px; font-size: 15px; line-height: 1.3; font-weight: 600; color: var(--ink); }
+.small { font-size: 14px; line-height: 1.4; }
+.micro { font-size: 12px; line-height: 1.35; color: var(--ink-3); }
+.muted { color: var(--ink-2); }
+.num  { font-variant-numeric: tabular-nums; }
+.strong { font-weight: 600; }
+
+/* Elenchi puntati sobri */
+.list { list-style: none; margin: 0; padding: 0; }
+.list > li { position: relative; padding-left: 16px; margin: 0 0 6px; }
+.list > li::before { content: ""; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; background: var(--ink-3); border-radius: 1px; }
+.list.tight > li { margin-bottom: 3px; }
+
+/* ---------- Componenti ---------- */
+
+/* Riquadro: fascia colorata in alto, nessuna ombra */
+.panel { background: var(--panel); border-radius: var(--radius); padding: 18px 20px; }
+.panel.ruled { background: none; border-top: 3px solid var(--brand); border-radius: 0; padding: 14px 0 0; }
+
+/* Messaggio chiave ("so what") */
+.callout {
+  border-left: 4px solid var(--accent);
+  padding: 4px 0 4px 16px;
+  font-size: 16px; line-height: 1.4; color: var(--ink);
+}
+.callout strong { font-weight: 600; }
+
+/* Etichette brevi (responsabile, stato, fase) */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  font-size: 12px; line-height: 1.4; font-weight: 500; color: var(--ink-2);
+  white-space: nowrap;
+}
+.tag.brand { background: var(--brand); color: #fff; }
+.tag.focus { background: var(--focus-soft); color: var(--brand); }
+
+/* Semaforo: pallino + etichetta, mai colore da solo */
+.rag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+.rag::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); }
+.rag.good::before { background: var(--good); }
+.rag.warning::before { background: var(--warning); }
+.rag.serious::before { background: var(--serious); }
+.rag.critical::before { background: var(--critical); }
+
+/* Harvey ball: data-v da 0 a 4 */
+.harvey {
+  display: inline-block; width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--brand);
+  background: conic-gradient(var(--brand) calc(var(--v, 0) * 25%), transparent 0);
+  vertical-align: middle;
+}
+.harvey[data-v="0"] { --v: 0; } .harvey[data-v="1"] { --v: 1; } .harvey[data-v="2"] { --v: 2; }
+.harvey[data-v="3"] { --v: 3; } .harvey[data-v="4"] { --v: 4; }
+
+/* Tabella */
+.table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.35; }
+.table th {
+  text-align: left; font-weight: 600; color: var(--ink-2); font-size: 13px;
+  padding: 8px 10px; border-bottom: 2px solid var(--ink);
+  vertical-align: bottom;
+}
+.table td { padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.table td.c, .table th.c { text-align: center; }
+.table td.r, .table th.r { text-align: right; font-variant-numeric: tabular-nums; }
+.table tr.highlight td { background: var(--focus-soft); }
+
+/* Legenda */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-2); margin: 0; padding: 0; list-style: none; }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+.legend .key { width: 12px; height: 12px; border-radius: 2px; background: var(--k, var(--ink-3)); }
+.legend .key.line { height: 2px; width: 18px; border-radius: 1px; }
+.legend .key.dot { border-radius: 50%; }
+
+/* Contenitore di un grafico ECharts */
+.chart { width: 100%; height: 100%; }
+
+/* ---------- Modalità modifica (tasto E) ---------- */
+body.cvl.editing [contenteditable="true"] { outline: 1px dashed rgba(42, 120, 214, .55); outline-offset: 2px; cursor: text; }
+body.cvl.editing [contenteditable="true"]:focus { outline: 2px solid var(--focus); }
+.edit-badge {
+  position: fixed; right: 12px; bottom: 12px; z-index: 10;
+  padding: 6px 10px; border-radius: 4px;
+  background: var(--ink); color: #fff; font: 500 12px/1.3 var(--font);
+}
+
+/* ---------- Stampa / PDF: una slide per pagina ---------- */
+@page { size: 1280px 720px; margin: 0; }
+@media print {
+  html, body.cvl { background: var(--paper); overflow: visible; }
+  .slide { position: static; transform: none !important; box-shadow: none !important; }
+  .edit-badge { display: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

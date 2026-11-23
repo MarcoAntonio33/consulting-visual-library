@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cinque forze di Porter</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .forces { display: grid; grid-template-columns: 1fr 44px 1.15fr 44px 1fr; grid-template-rows: auto 30px auto 30px auto; height: 100%; padding-bottom: 14px; align-items: stretch; }
+  .force { background: var(--panel); border-radius: var(--radius); padding: 12px 16px; }
+  .force.center { background: var(--paper); outline: 2px solid var(--brand); outline-offset: -2px; }
+  .force h2 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+  .force .list li { font-size: 13.5px; line-height: 1.35; margin-bottom: 2px; }
+  .top { grid-column: 3; grid-row: 1; } .bottom { grid-column: 3; grid-row: 5; }
+  .left { grid-column: 1; grid-row: 3; } .right { grid-column: 5; grid-row: 3; } .center { grid-column: 3; grid-row: 3; }
+  .arrow { display: flex; align-items: center; justify-content: center; }
+  .arrow svg { width: 28px; height: 28px; }
+  .a-top { grid-column: 3; grid-row: 2; } .a-bottom { grid-column: 3; grid-row: 4; }
+  .a-left { grid-column: 2; grid-row: 3; } .a-right { grid-column: 4; grid-row: 3; }
+  .meter { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; color: var(--ink-2); }
+  .meter i { display: inline-flex; gap: 3px; }
+  .meter i b { width: 18px; height: 6px; border-radius: 2px; background: var(--focus-soft); }
+  .meter[data-v="1"] i b:nth-child(-n+1), .meter[data-v="2"] i b:nth-child(-n+2), .meter[data-v="3"] i b:nth-child(-n+3) { background: var(--brand); }
+  .meter strong { font-weight: 600; color: var(--ink); }
+  .verdict { grid-column: 5; grid-row: 5; align-self: end; }
+  .corner { grid-column: 1; grid-row: 5; align-self: end; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Strategia <span class="sep">/</span> Attrattività del settore</p>
+    <h1 class="action-title">Il settore resta mediamente attrattivo, ma il potere contrattuale degli enti committenti comprime i margini</h1>
+  </header>
+
+  <section class="slide-body forces">
+    <div class="force top">
+      <h2>Minaccia di nuovi entranti</h2>
+      <p class="meter" data-v="2"><i><b></b><b></b><b></b></i> Intensità <strong>media</strong></p>
+      <ul class="list"><li>Requisiti di gara elevati frenano gli operatori piccoli</li><li>Gruppi nazionali entrano per acquisizione</li></ul>
+    </div>
+    <div class="arrow a-top"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3v20M7 16l7 7 7-7" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <div class="force left">
+      <h2>Potere dei fornitori</h2>
+      <p class="meter" data-v="1"><i><b></b><b></b><b></b></i> Intensità <strong>bassa</strong></p>
+      <ul class="list"><li>Molti fornitori di tecnologia intercambiabili</li><li>Costi di cambio contenuti</li></ul>
+    </div>
+    <div class="arrow a-left"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 14h20M16 7l7 7-7 7" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <div class="force center">
+      <h2>Rivalità tra i concorrenti</h2>
+      <p class="meter" data-v="3"><i><b></b><b></b><b></b></i> Intensità <strong>alta</strong></p>
+      <ul class="list"><li>Sei operatori regionali con quote simili</li><li>Crescita del mercato al 2% annuo</li><li>Competizione centrata sul prezzo</li></ul>
+    </div>
+
+    <div class="arrow a-right"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M25 14H5M12 7l-7 7 7 7" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="force right">
+      <h2>Potere dei clienti</h2>
+      <p class="meter" data-v="3"><i><b></b><b></b><b></b></i> Intensità <strong>alta</strong></p>
+      <ul class="list"><li>Enti pubblici concentrati: i primi 10 valgono il 55% dei ricavi</li><li>Gare al massimo ribasso</li></ul>
+    </div>
+
+    <div class="arrow a-bottom"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 25V5M7 12l7-7 7 7" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="force bottom">
+      <h2>Minaccia di prodotti sostitutivi</h2>
+      <p class="meter" data-v="2"><i><b></b><b></b><b></b></i> Intensità <strong>media</strong></p>
+      <ul class="list"><li>Piattaforme self-service riducono il bisogno di assistenza</li></ul>
+    </div>
+
+    <p class="callout verdict small">Leva prioritaria: <strong>ridurre la dipendenza dai primi dieci clienti</strong>.</p>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; schema delle cinque forze di M. E. Porter</p>
+    <p class="page">5</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+</body>
+</html>

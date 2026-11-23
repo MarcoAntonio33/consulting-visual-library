@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mappa di calore</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 270px; gap: 36px; height: 100%; padding-bottom: 10px; }
+  .chartcol { display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+  .side { display: flex; flex-direction: column; gap: 14px; padding-top: 30px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Tempi di evasione per sede</p>
+    <h1 class="action-title">I ritardi si concentrano in tre sedi e peggiorano da metà 2025: non è un problema dell'intera rete</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="chartcol">
+      <p class="small muted" style="margin:0">Tempo medio di evasione delle pratiche, giorni, per sede e trimestre</p>
+      <div class="chart" id="chart" role="img" aria-label="Tempo di evasione per sede e trimestre"></div>
+    </div>
+    <aside class="side">
+      <h2 class="h-panel">Cosa emerge</h2>
+      <p>Bari, Lecce e Taranto superano i 7 giorni negli ultimi tre trimestri.</p>
+      <p>Le tre sedi hanno perso 11 addetti nel 2025 senza sostituzioni.</p>
+      <p class="callout">Proposta: task force temporanea e redistribuzione delle pratiche tra sedi.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; sistema di gestione delle pratiche</p>
+    <p class="page">15</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== una riga per sede, un valore per trimestre */
+const DATI = {
+  colonne: ["T1 25", "T2 25", "T3 25", "T4 25", "T1 26", "T2 26", "T3 26"],
+  righe: {
+    "Bari":     [5.1, 5.6, 6.4, 7.2, 7.8, 8.3, 8.9],
+    "Lecce":    [4.8, 5.2, 6.1, 6.9, 7.4, 7.9, 8.2],
+    "Taranto":  [5.0, 5.3, 5.9, 6.6, 7.1, 7.6, 7.8],
+    "Brindisi": [4.6, 4.7, 4.9, 5.0, 5.2, 5.1, 5.3],
+    "Foggia":   [4.9, 4.8, 5.0, 5.1, 4.9, 5.2, 5.0],
+    "Matera":   [4.2, 4.4, 4.3, 4.5, 4.6, 4.4, 4.5],
+    "Potenza":  [4.4, 4.5, 4.6, 4.4, 4.7, 4.8, 4.6]
+  },
+  min: 4, max: 9, unita: "giorni"
+};
+/* ======================== */
+const C = CVL.colors, nomi = Object.keys(DATI.righe);
+const data = [];
+nomi.forEach((n, r) => DATI.righe[n].forEach((v, c) => {
+  const t = (v - DATI.min) / (DATI.max - DATI.min);   // testo bianco sulle celle scure, scuro su quelle chiare
+  data.push({ value: [c, r, v], label: { color: t > 0.42 ? "#fff" : C.ink } });
+}));
+// scala sequenziale a una sola tinta (blu): chiaro = valori bassi, scuro = valori alti
+const ramp = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"];
+
+CVL.chart("#chart", {
+  grid: { left: 80, right: 10, top: 40, bottom: 60 },
+  tooltip: { formatter: p => `<b>${nomi[p.value[1]]}</b>, ${DATI.colonne[p.value[0]]}<br>${CVL.fmt(p.value[2])} ${DATI.unita}` },
+  xAxis: { type: "category", data: DATI.colonne, position: "top", axisLine: { show: false }, splitArea: { show: false } },
+  yAxis: { type: "category", data: nomi, inverse: true, axisLine: { show: false }, axisLabel: { color: C.ink, fontSize: 14 } },
+  visualMap: { min: DATI.min, max: DATI.max, calculable: false, orient: "horizontal", left: 80, bottom: 4, itemWidth: 12, itemHeight: 200,
+    inRange: { color: ramp }, text: [`${DATI.max} ${DATI.unita}`, `${DATI.min}`], textGap: 10, textStyle: { color: C.ink2, fontSize: 12 } },
+  series: [{ type: "heatmap", data,
+    itemStyle: { borderColor: C.paper, borderWidth: 2, borderRadius: 3 },
+    label: { show: true, fontSize: 13, fontFamily: CVL.font, formatter: p => CVL.fmt(p.value[2], { minimumFractionDigits: 1 }),
+             color: C.ink },
+    emphasis: { itemStyle: { borderColor: C.ink, borderWidth: 2 } } }]
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timeline delle tappe</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .tl { position: relative; height: 100%; }
+  .axis { position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; background: var(--context); border-radius: 2px; }
+  .axis .done { position: absolute; left: 0; top: 0; bottom: 0; background: var(--brand); border-radius: 2px; }
+  .pt { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--paper); border: 3px solid var(--brand); }
+  .pt.done { background: var(--brand); }
+  .pt.next { border-color: var(--accent); background: var(--accent); }
+  .stem { position: absolute; width: 1px; background: var(--rule); }
+  .card { position: absolute; width: 190px; transform: translateX(-50%); }
+  .card time { display: block; font-size: 13px; font-weight: 600; color: var(--brand); font-variant-numeric: tabular-nums; }
+  .card h2 { margin: 2px 0 3px; font-size: 15px; font-weight: 600; line-height: 1.25; }
+  .card p { margin: 0; font-size: 13px; line-height: 1.38; color: var(--ink-2); }
+  .card.next time { color: var(--accent); }
+  .legend { position: absolute; left: 0; bottom: 14px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Roadmap <span class="sep">/</span> Tappe del programma</p>
+    <h1 class="action-title">Tre tappe su otto sono completate; la prossima decisione del comitato è attesa per marzo 2027</h1>
+  </header>
+
+  <section class="slide-body tl" id="tl">
+    <div class="axis"><div class="done" id="done"></div></div>
+    <ul class="legend">
+      <li><span class="key dot" style="--k: var(--brand)"></span>completata</li>
+      <li><span class="key dot" style="--k: var(--accent)"></span>prossima</li>
+      <li><span class="key dot" style="--k: var(--paper); box-shadow: inset 0 0 0 2px var(--brand)"></span>pianificata</li>
+    </ul>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; piano di programma</p>
+    <p class="page">22</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== stato: "fatto", "prossimo" oppure vuoto; le tappe si alternano sopra e sotto la linea */
+const TAPPE = [
+  { data: "Maggio 2026",    titolo: "Avvio del programma",       testo: "Nomina del comitato guida e del responsabile", stato: "fatto" },
+  { data: "Agosto 2026",    titolo: "Diagnosi completata",       testo: "Rapporto condiviso con il consiglio", stato: "fatto" },
+  { data: "Novembre 2026",  titolo: "Modello approvato",         testo: "Nuovo assetto e business case", stato: "fatto" },
+  { data: "Marzo 2027",     titolo: "Scelta del gestionale",     testo: "Aggiudicazione della gara", stato: "prossimo" },
+  { data: "Giugno 2027",    titolo: "Pilota in due sedi",        testo: "Nuovi processi e ruoli in esercizio" },
+  { data: "Dicembre 2027",  titolo: "Gestionale attivo",         testo: "Migrazione completata su tutte le sedi" },
+  { data: "Giugno 2028",    titolo: "Centro servizi unico",      testo: "Back office accentrato operativo" },
+  { data: "Dicembre 2028",  titolo: "Chiusura del programma",    testo: "Verifica dei benefici e passaggio di consegne" }
+];
+/* ======================== */
+const box = document.getElementById("tl"), W = box.clientWidth, H = box.clientHeight, mid = H / 2;
+const pad = 100, step = (W - 2 * pad) / (TAPPE.length - 1);
+let lastDone = -1;
+TAPPE.forEach((t, i) => {
+  const x = pad + i * step, up = i % 2 === 0;
+  if (t.stato === "fatto") lastDone = i;
+  const cls = t.stato === "fatto" ? "done" : t.stato === "prossimo" ? "next" : "";
+  box.insertAdjacentHTML("beforeend", `<i class="stem" style="left:${x}px;top:${up ? mid - 44 : mid + 8}px;height:36px"></i>
+    <i class="pt ${cls}" style="left:${x}px" title="${t.data}: ${t.titolo}"></i>
+    <div class="card ${cls}" style="left:${x}px;${up ? `bottom:${H - mid + 52}px` : `top:${mid + 52}px`}">
+      <time>${t.data}</time><h2>${t.titolo}</h2><p>${t.testo}</p></div>`);
+});
+if (lastDone >= 0) document.getElementById("done").style.width = (pad + lastDone * step + step / 2) + "px";
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business case</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .bc { display: grid; grid-template-columns: 1fr 300px; gap: 44px; height: 100%; padding-bottom: 10px; }
+  .chartcol { display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .top p { margin: 0; }
+  .metrics { display: grid; grid-template-rows: repeat(3, auto) 1fr; gap: 0; align-content: start; }
+  .m { padding: 14px 0; border-top: 1px solid var(--rule); }
+  .m:first-child { border-top: 2px solid var(--ink); }
+  .m .label { font-size: 14px; color: var(--ink-2); }
+  .m .value { font-size: 32px; font-weight: 600; line-height: 1.15; }
+  .m .value small { font-size: 15px; font-weight: 500; color: var(--ink-2); margin-left: 3px; }
+  .assume { padding-top: 14px; border-top: 1px solid var(--rule); }
+  .assume .list li { font-size: 13px; color: var(--ink-2); margin-bottom: 3px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Sintesi <span class="sep">/</span> Business case</p>
+    <h1 class="action-title">L'investimento di 7,5 milioni si ripaga in tre anni e mezzo e genera un valore attuale netto di oltre 13 milioni</h1>
+  </header>
+
+  <section class="slide-body bc">
+    <div class="chartcol">
+      <div class="top">
+        <p class="small muted">Flussi di cassa del piano, milioni di euro</p>
+        <ul class="legend">
+          <li><span class="key" style="--k: var(--neg)"></span>flusso annuo negativo</li>
+          <li><span class="key" style="--k: var(--pos)"></span>flusso annuo positivo</li>
+          <li><span class="key line" style="--k: var(--ink)"></span>cumulato</li>
+        </ul>
+      </div>
+      <div class="chart" id="chart" role="img" aria-label="Flussi di cassa annui e cumulati del piano"></div>
+    </div>
+    <aside class="metrics" id="metrics"></aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; modello economico del piano, tasso di attualizzazione 8%</p>
+    <p class="page">27</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== flussi netti annui (benefici meno costi), in milioni */
+const DATI = {
+  anni: ["2027", "2028", "2029", "2030", "2031", "2032"],
+  flussi: [-6.0, -1.5, 3.5, 7.5, 9.0, 9.0],
+  tasso: 0.08,
+  ipotesi: ["Benefici a regime dal 2031: 9 mln € l'anno", "Investimenti e costi di avvio: 7,5 mln € nel biennio 2027–2028", "Nessun effetto da eventuali acquisizioni"]
+};
+/* ======================== */
+const C = CVL.colors;
+let cum = 0; const cumul = DATI.flussi.map(v => +(cum += v).toFixed(1));
+const van = DATI.flussi.reduce((s, v, i) => s + v / Math.pow(1 + DATI.tasso, i + 1), 0);
+// tasso interno di rendimento (bisezione)
+const npv = r => DATI.flussi.reduce((s, v, i) => s + v / Math.pow(1 + r, i + 1), 0);
+let lo = -0.9, hi = 5; for (let k = 0; k < 100; k++) { const m = (lo + hi) / 2; npv(m) > 0 ? lo = m : hi = m; }
+// anno di pareggio: primo anno con cumulato >= 0, interpolato in mesi
+const iPay = cumul.findIndex(v => v >= 0);
+const months = iPay > 0 ? Math.round((iPay + (-cumul[iPay - 1]) / DATI.flussi[iPay]) * 12) : null;
+
+document.getElementById("metrics").innerHTML = `
+  <div class="m"><div class="label">Valore attuale netto</div><div class="value">${CVL.fmt(van)}<small>mln €</small></div></div>
+  <div class="m"><div class="label">Tasso interno di rendimento</div><div class="value">${CVL.fmt(lo * 100, { maximumFractionDigits: 0 })}<small>%</small></div></div>
+  <div class="m"><div class="label">Tempo di recupero</div><div class="value">${months ?? "oltre il piano"}<small>${months ? "mesi" : ""}</small></div></div>
+  <div class="assume"><h2 class="h-small">Ipotesi principali</h2><ul class="list">${DATI.ipotesi.map(x => `<li>${x}</li>`).join("")}</ul></div>`;
+
+CVL.chart("#chart", {
+  grid: { left: 40, right: 20, top: 30, bottom: 34 },
+  tooltip: { trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(23,32,43,.05)" } }, valueFormatter: v => CVL.fmt(v) + " mln €" },
+  xAxis: { type: "category", data: DATI.anni, axisLine: { show: false } },
+  yAxis: { type: "value", min: -8, max: 24, interval: 4, axisLabel: { formatter: v => (v < 0 ? "−" : "") + CVL.fmt(Math.abs(v)) } },
+  series: [
+    { name: "Flusso annuo", type: "bar", barWidth: 24,
+      data: DATI.flussi.map(v => ({ value: v, itemStyle: { color: v < 0 ? C.neg : C.pos, borderRadius: v < 0 ? [0, 0, 4, 4] : [4, 4, 0, 0] } })),
+      markLine: { silent: true, symbol: "none", lineStyle: { color: C.ink3, width: 1, type: "solid" }, label: { show: false }, data: [{ yAxis: 0 }] } },
+    { name: "Cumulato", type: "line", color: C.ink, symbol: "circle", symbolSize: 8, itemStyle: { borderColor: C.paper, borderWidth: 2 },
+      // etichette solo sul punto più basso e sull'ultimo anno
+      data: cumul.map((v, i) => ({ value: v, label: { show: i === cumul.length - 1 || v === Math.min(...cumul),
+        position: v === Math.min(...cumul) ? "right" : "top" } })),
+      label: { distance: 8, color: C.ink, fontSize: 13, fontWeight: 600, formatter: p => (p.value > 0 ? "+" : p.value < 0 ? "−" : "") + CVL.fmt(Math.abs(p.value), { minimumFractionDigits: 1 }) } }
+  ]
+});
+</script>
+</body>
+</html>

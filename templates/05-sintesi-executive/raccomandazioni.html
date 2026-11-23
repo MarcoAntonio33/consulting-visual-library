@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raccomandazioni e prossimi passi</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .rec { width: 100%; border-collapse: collapse; }
+  .rec th { text-align: left; font-size: 13px; font-weight: 600; color: var(--ink-2); padding: 0 12px 8px; border-bottom: 2px solid var(--ink); }
+  .rec td { padding: 17px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; font-size: 14px; line-height: 1.4; }
+  .rec td.n { width: 44px; font-size: 22px; font-weight: 600; color: var(--brand); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .rec td.what b { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .rec td.what span { color: var(--ink-2); }
+  .rec td.ben { width: 220px; }
+  .rec td.ben b { font-weight: 600; }
+  .rec td.who { width: 170px; }
+  .rec td.when { width: 110px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .prio { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: 6px; }
+  .prio i { width: 8px; height: 14px; border-radius: 2px; background: var(--focus-soft); }
+  .prio[data-v="3"] i, .prio[data-v="2"] i:nth-child(-n+2), .prio[data-v="1"] i:nth-child(1) { background: var(--brand); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Sintesi <span class="sep">/</span> Raccomandazioni</p>
+    <h1 class="action-title">Cinque azioni da avviare nei prossimi 90 giorni, le prime due prima della chiusura dell'esercizio</h1>
+  </header>
+
+  <section class="slide-body">
+    <table class="rec" id="rec"></table>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; elaborazioni del gruppo di lavoro</p>
+    <p class="page">28</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== priorita: 3 alta, 2 media, 1 bassa; le righe sono già nell'ordine in cui agire */
+const AZIONI = [
+  { titolo: "Nominare il responsabile del programma", dettaglio: "Con mandato e budget propri, riporta all'amministratore delegato", beneficio: "Condizione per avviare il piano", chi: "Amministratore delegato", entro: "15 dic 2026", priorita: 3 },
+  { titolo: "Bandire la gara per il gestionale unico", dettaglio: "Capitolato già predisposto nella fase di disegno", beneficio: "<b>4,8 mln €</b> l'anno a regime", chi: "Sistemi informativi", entro: "31 dic 2026", priorita: 3 },
+  { titolo: "Eliminare il secondo controllo sulle pratiche", dettaglio: "Sostituirlo con verifiche a campione sul 10% dei casi", beneficio: "<b>−1,5 giorni</b> sui tempi medi", chi: "Direzione operazioni", entro: "31 gen 2027", priorita: 2 },
+  { titolo: "Avviare l'accademia delle competenze", dettaglio: "Prima edizione per 40 persone, certificazione esterna", beneficio: "<b>120</b> certificati entro il 2028", chi: "Persone e organizzazione", entro: "28 feb 2027", priorita: 2 },
+  { titolo: "Rivedere il listino per fasce di servizio", dettaglio: "Tre fasce con livelli di servizio garantiti", beneficio: "<b>+1,2 mln €</b> di ricavi l'anno", chi: "Direzione commerciale", entro: "15 mar 2027", priorita: 1 }
+];
+/* ======================== */
+const PRIO = { 3: "alta", 2: "media", 1: "bassa" };
+document.getElementById("rec").innerHTML = `<thead><tr><th></th><th>Azione</th><th>Beneficio atteso</th><th>Responsabile</th><th>Entro</th><th>Priorità</th></tr></thead><tbody>` +
+  AZIONI.map((a, i) => `<tr><td class="n">${i + 1}</td><td class="what"><b>${a.titolo}</b><span>${a.dettaglio}</span></td>
+    <td class="ben">${a.beneficio}</td><td class="who">${a.chi}</td><td class="when">${a.entro}</td>
+    <td><span class="prio" data-v="${a.priorita}"><i></i><i></i><i></i></span>${PRIO[a.priorita]}</td></tr>`).join("") + "</tbody>";
+</script>
+</body>
+</html>

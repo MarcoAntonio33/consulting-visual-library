@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matrice RACI</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: 1fr auto; height: 100%; padding-bottom: 12px; gap: 12px; }
+  .table th.role { text-align: center; width: 112px; line-height: 1.25; }
+  .table td { vertical-align: middle; padding-top: 8px; padding-bottom: 8px; font-size: 14px; }
+  .table td.phase { font-size: 12px; color: var(--ink-3); width: 90px; }
+  .r { font-style: normal; display: inline-flex; width: 30px; height: 26px; align-items: center; justify-content: center; border-radius: 4px; font-size: 13px; font-weight: 600; }
+  .r.R { background: var(--focus-soft); color: var(--brand); }
+  .r.A { background: var(--brand); color: #fff; }
+  .r.C { background: var(--panel-2); color: var(--ink-2); }
+  .r.I { background: none; color: var(--ink-3); box-shadow: inset 0 0 0 1px var(--rule); }
+  .key { display: flex; gap: 28px; font-size: 13px; color: var(--ink-2); }
+  .key span { display: inline-flex; align-items: center; gap: 8px; }
+  .key .r { width: 26px; height: 22px; font-size: 12px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Processi <span class="sep">/</span> Ruoli e responsabilità</p>
+    <h1 class="action-title">Ogni attività del programma ha un solo responsabile finale; il comitato guida decide solo su budget e priorità</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <table class="table" id="raci"></table>
+    <div class="key">
+      <span><i class="r R">R</i>Esegue l'attività</span>
+      <span><i class="r A">A</i>Ne risponde e approva (uno per riga)</span>
+      <span><i class="r C">C</i>Viene consultato prima</span>
+      <span><i class="r I">I</i>Viene informato dopo</span>
+    </div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; regolamento del programma di trasformazione</p>
+    <p class="page">20</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== una lettera per ruolo (R, A, C, I) o "" se il ruolo non è coinvolto */
+const RUOLI = ["Comitato guida", "Responsabile programma", "Responsabili di sede", "Sistemi informativi", "Persone e organizzazione", "Consulenti"];
+const ATTIVITA = [
+  { fase: "Avvio",     nome: "Approvare budget e priorità",          raci: ["A", "R", "I", "I", "I", "C"] },
+  { fase: "Avvio",     nome: "Nominare i referenti di sede",         raci: ["I", "A", "R", "", "C", ""] },
+  { fase: "Disegno",   nome: "Ridisegnare i processi",               raci: ["I", "A", "C", "C", "", "R"] },
+  { fase: "Disegno",   nome: "Definire i nuovi ruoli",               raci: ["C", "A", "C", "", "R", "C"] },
+  { fase: "Attuazione",nome: "Configurare il gestionale",            raci: ["", "A", "C", "R", "", "C"] },
+  { fase: "Attuazione",nome: "Formare il personale",                 raci: ["", "A", "C", "", "R", "C"] },
+  { fase: "Attuazione",nome: "Avviare le sedi pilota",               raci: ["I", "A", "R", "C", "C", "C"] },
+  { fase: "Controllo", nome: "Misurare i benefici",                  raci: ["I", "A", "C", "C", "", "R"] }
+];
+/* ======================== */
+const t = document.getElementById("raci");
+let html = `<thead><tr><th></th><th>Attività</th>${RUOLI.map(r => `<th class="role">${r}</th>`).join("")}</tr></thead><tbody>`;
+ATTIVITA.forEach((a, i) => {
+  const showPhase = i === 0 || ATTIVITA[i - 1].fase !== a.fase;
+  html += `<tr><td class="phase">${showPhase ? a.fase : ""}</td><td>${a.nome}</td>${a.raci.map((x, j) => `<td class="c">${x ? `<i class="r ${x}" title="${RUOLI[j]}: ${x}">${x}</i>` : ""}</td>`).join("")}</tr>`;
+  const nA = a.raci.filter(x => x === "A").length;
+  if (nA !== 1) console.warn(`Attività "${a.nome}": ${nA} responsabili finali (A), dovrebbe essercene uno`);
+});
+t.innerHTML = html + "</tbody>";
+</script>
+</body>
+</html>

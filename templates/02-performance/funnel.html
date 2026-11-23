@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imbuto di conversione</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 290px; gap: 40px; height: 100%; padding-bottom: 14px; }
+  .funnel { display: grid; grid-auto-rows: 1fr; gap: 0; }
+  .stage { display: grid; grid-template-columns: 210px 1fr 120px; gap: 20px; align-items: center; }
+  .stage .lab { font-size: 15px; font-weight: 600; text-align: right; }
+  .stage .lab small { display: block; font-size: 12px; font-weight: 400; color: var(--ink-3); }
+  .track { display: flex; justify-content: center; align-items: center; height: 46px; }
+  .block { height: 100%; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .conv { font-size: 13px; color: var(--ink-2); line-height: 1.3; }
+  .conv b { display: block; font-size: 17px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .conv.drop b { color: var(--ink); }
+  .conv.drop { border-left: 3px solid var(--accent); padding-left: 8px; }
+  .side { display: flex; flex-direction: column; gap: 14px; padding-top: 6px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Imbuto commerciale</p>
+    <h1 class="action-title">Solo un'offerta su quattro arriva in negoziazione: è il passaggio dove si perde più valore e dove intervenire per primo</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="funnel" id="funnel"></div>
+    <aside class="side">
+      <h2 class="h-panel">Dove intervenire</h2>
+      <p>Il 74% delle offerte non riceve risposta entro 30 giorni: manca un presidio dopo l'invio.</p>
+      <p>Portare la conversione dal 26% al 40% vale circa 40 contratti in più l'anno.</p>
+      <p class="callout">Proposta: un responsabile per ogni offerta sopra i 50.000 euro.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; sistema CRM, ottobre 2025 – settembre 2026</p>
+    <p class="page">14</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== */
+const DATI = [
+  { fase: "Contatti",                 nota: "richieste e segnalazioni", valore: 2400 },
+  { fase: "Opportunità qualificate",  nota: "bisogno e budget verificati", valore: 960 },
+  { fase: "Offerte inviate",          nota: "", valore: 610 },
+  { fase: "In negoziazione",          nota: "", valore: 160 },
+  { fase: "Contratti firmati",        nota: "", valore: 96 }
+];
+/* ======================== */
+// scala ordinale di blu (dal più scuro al più chiaro), testo bianco o scuro in base allo sfondo
+const RAMP = ["#0d366b", "#1c5cab", "#2a78d6", "#5598e7", "#86b6ef"];
+const INK  = ["#fff", "#fff", "#fff", "#17202b", "#17202b"];
+const box = document.getElementById("funnel"), max = DATI[0].valore;
+const rates = DATI.map((d, i) => i ? d.valore / DATI[i - 1].valore : null);
+const worst = rates.indexOf(Math.min(...rates.filter(r => r != null)));
+DATI.forEach((d, i) => {
+  const w = Math.max(d.valore / max * 100, 9);
+  const conv = i ? `<div class="conv ${i === worst ? "drop" : ""}"><b>${CVL.fmt(rates[i] * 100, { maximumFractionDigits: 0 })}%</b>dalla fase precedente</div>` : `<div></div>`;
+  box.insertAdjacentHTML("beforeend", `<div class="stage">
+    <div class="lab">${d.fase}${d.nota ? `<small>${d.nota}</small>` : ""}</div>
+    <div class="track"><div class="block" style="width:${w}%;background:${RAMP[i % RAMP.length]};color:${INK[i % INK.length]}" title="${d.fase}: ${CVL.fmt(d.valore)}">${CVL.fmt(d.valore)}</div></div>
+    ${conv}</div>`);
+});
+</script>
+</body>
+</html>

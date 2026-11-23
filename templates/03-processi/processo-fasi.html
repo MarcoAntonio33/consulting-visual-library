@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processo a fasi (chevron)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .proc { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: 64px auto 1fr auto auto; column-gap: 6px; height: 100%; padding-bottom: 16px; }
+  .chev {
+    background: var(--brand); color: #fff;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%);
+    display: flex; flex-direction: column; justify-content: center; padding: 0 28px 0 36px;
+  }
+  .chev:first-child { clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%); padding-left: 18px; }
+  .chev.current { background: var(--focus); }
+  .chev b { font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .chev span { font-size: 12.5px; opacity: .85; }
+  .goal { padding: 14px 14px 10px 18px; font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--ink); border-bottom: 1px solid var(--rule); }
+  .acts { padding: 12px 14px 0 18px; }
+  .acts .list li { font-size: 14.5px; line-height: 1.35; margin-bottom: 7px; }
+  .gate { margin: 0 14px 10px 18px; padding: 8px 10px; background: var(--panel); border-radius: var(--radius); font-size: 13.5px; line-height: 1.35; }
+  .gate .micro { display: block; margin-bottom: 1px; }
+  .out { padding: 10px 14px 0 18px; border-top: 1px solid var(--rule); }
+  .out .micro { display: block; margin-bottom: 2px; }
+  .out p { margin: 0 0 8px; font-size: 14px; font-weight: 500; }
+  .who { display: flex; flex-wrap: wrap; gap: 4px; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Processi <span class="sep">/</span> Metodo di lavoro</p>
+    <h1 class="action-title">Un percorso in cinque fasi porta dalla diagnosi al nuovo modello operativo in 26 settimane</h1>
+  </header>
+
+  <section class="slide-body proc" id="proc"></section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: proposta di intervento; durate indicative</p>
+    <p class="page">16</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== corrente: true evidenzia la fase in corso */
+const FASI = [
+  { nome: "Diagnosi", durata: "settimane 1–4", obiettivo: "Capire dove si generano costi e ritardi",
+    attivita: ["Interviste a 25 responsabili", "Analisi dei dati di processo", "Confronto con il settore", "Mappa delle inefficienze"],
+    decisione: "Conferma del perimetro e delle priorità", output: "Rapporto di diagnosi", chi: ["Direzione", "Consulenti"] },
+  { nome: "Disegno", durata: "settimane 5–9", obiettivo: "Definire il modello operativo obiettivo", corrente: true,
+    attivita: ["Laboratori con i responsabili", "Nuovi ruoli e flussi", "Requisiti per i sistemi", "Stima dei benefici"],
+    decisione: "Approvazione del modello e del business case", output: "Modello operativo obiettivo", chi: ["Gruppo di progetto"] },
+  { nome: "Pilota", durata: "settimane 10–15", obiettivo: "Verificare il modello in due sedi",
+    attivita: ["Avvio in due sedi", "Misure prima e dopo", "Correzioni rapide", "Raccolta delle lezioni apprese"],
+    decisione: "Via libera all'estensione", output: "Esiti del pilota", chi: ["Sedi pilota", "Consulenti"] },
+  { nome: "Estensione", durata: "settimane 16–23", obiettivo: "Portare il modello su tutta la rete",
+    attivita: ["Piano per ondate", "Formazione dei referenti", "Supporto sul campo", "Gestione delle eccezioni"],
+    decisione: "Verifica dei benefici per ondata", output: "Rete allineata al modello", chi: ["Responsabili di sede"] },
+  { nome: "Consolidamento", durata: "settimane 24–26", obiettivo: "Rendere stabili i risultati",
+    attivita: ["Cruscotto di monitoraggio", "Passaggio di consegne", "Revisione finale"],
+    decisione: "Chiusura del programma", output: "Sistema di monitoraggio", chi: ["Controllo di gestione"] }
+];
+/* ======================== */
+const box = document.getElementById("proc");
+const cells = { chev: "", goal: "", acts: "", gate: "", out: "" };
+FASI.forEach(f => {
+  cells.chev += `<div class="chev${f.corrente ? " current" : ""}"><b>${f.nome}</b><span>${f.durata}${f.corrente ? ", in corso" : ""}</span></div>`;
+  cells.goal += `<div class="goal">${f.obiettivo}</div>`;
+  cells.acts += `<div class="acts"><ul class="list">${f.attivita.map(a => `<li>${a}</li>`).join("")}</ul></div>`;
+  cells.gate += `<div class="gate"><span class="micro">Decisione a fine fase</span>${f.decisione || ""}</div>`;
+  cells.out  += `<div class="out"><span class="micro">Risultato</span><p>${f.output}</p><div class="who">${f.chi.map(c => `<span class="tag">${c}</span>`).join("")}</div></div>`;
+});
+box.innerHTML = cells.chev + cells.goal + cells.acts + cells.gate + cells.out;
+</script>
+</body>
+</html>

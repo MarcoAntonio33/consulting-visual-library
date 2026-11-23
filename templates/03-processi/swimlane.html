@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processo per corsie (swimlane)</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-rows: 1fr auto; gap: 12px; height: 100%; padding-bottom: 12px; }
+  .lanes { position: relative; }
+  .lanes svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .lanes svg text { font-family: var(--font); }
+  .step {
+    position: absolute; width: 132px; min-height: 48px; transform: translate(-50%, -50%);
+    background: var(--paper); border: 1.5px solid var(--brand); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 6px 8px; font-size: 13px; line-height: 1.25; color: var(--ink);
+  }
+  .step.dec { border-style: solid; border-color: var(--ink-3); background: var(--panel); border-radius: 24px; }
+  .step.end { background: var(--brand); color: #fff; }
+  .pain { position: absolute; top: -10px; right: -10px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: 2px solid var(--paper); }
+  .notes { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 6px 24px; align-items: start; border-top: 1px solid var(--rule); padding-top: 10px; }
+  .notes h2 { margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .notes p { margin: 0; display: grid; grid-template-columns: 26px 1fr; font-size: 13.5px; line-height: 1.35; }
+  .notes p b { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Processi <span class="sep">/</span> Processo attuale di gestione delle richieste</p>
+    <h1 class="action-title">Una richiesta passa di mano cinque volte e due controlli manuali generano il 60% dei ritardi</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="lanes" id="lanes"><svg id="links" aria-hidden="true"></svg></div>
+    <div class="notes" id="notes"><h2>Criticità</h2></div>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; osservazione sul campo e interviste, maggio 2026</p>
+    <p class="page">17</p>
+  </footer>
+</main>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI =====
+   corsia: indice in CORSIE; col: colonna (da 0); tipo: "dec" decisione, "end" esito finale;
+   criticita: numero che rimanda all'elenco CRITICITA */
+const CORSIE = ["Cliente", "Sportello", "Back office", "Sistemi informativi"];
+const PASSI = [
+  { id: "a", corsia: 0, col: 0, testo: "Invia la richiesta" },
+  { id: "b", corsia: 1, col: 1, testo: "Registra e verifica i documenti" },
+  { id: "c", corsia: 1, col: 2, testo: "Documenti completi?", tipo: "dec" },
+  { id: "d", corsia: 0, col: 2, testo: "Integra i documenti mancanti", criticita: 1 },
+  { id: "e", corsia: 2, col: 3, testo: "Istruisce la pratica" },
+  { id: "f", corsia: 3, col: 4, testo: "Inserimento manuale nel gestionale", criticita: 2 },
+  { id: "g", corsia: 2, col: 5, testo: "Secondo controllo e firma", criticita: 3 },
+  { id: "h", corsia: 0, col: 6, testo: "Riceve l'esito", tipo: "end" }
+];
+const FLUSSI = [["a", "b"], ["b", "c"], ["c", "d", "no"], ["d", "b"], ["c", "e", "sì"], ["e", "f"], ["f", "g"], ["g", "h"]];
+const CRITICITA = [
+  "Il 35% delle richieste torna al cliente: i requisiti non sono chiari sul sito",
+  "I dati vengono ricopiati a mano: 2,1 giorni medi di attesa",
+  "Il secondo controllo duplica il primo nel 90% dei casi"
+];
+/* ======================== */
+const S = CVL.svg, C = CVL.colors, box = document.getElementById("lanes"), svg = document.getElementById("links");
+const W = box.clientWidth, H = box.clientHeight, LBL = 150;
+const cols = Math.max(...PASSI.map(p => p.col)) + 1, laneH = H / CORSIE.length, colW = (W - LBL) / cols;
+const pos = {}; PASSI.forEach(p => pos[p.id] = { x: LBL + (p.col + 0.5) * colW, y: (p.corsia + 0.5) * laneH, ...p });
+
+// corsie
+CORSIE.forEach((c, i) => {
+  S("rect", { x: 0, y: i * laneH + 2, width: W, height: laneH - 4, fill: i % 2 ? C.paper : C.panel, rx: 3 }, svg);
+  const t = S("text", { x: 14, y: (i + 0.5) * laneH, dy: "0.35em", "font-size": 14, "font-weight": 600, fill: C.ink2 }, svg); t.textContent = c;
+});
+// passi
+PASSI.forEach(p => {
+  const el = document.createElement("div");
+  el.className = "step" + (p.tipo ? " " + p.tipo : "");
+  el.style.left = pos[p.id].x + "px"; el.style.top = pos[p.id].y + "px";
+  el.innerHTML = p.testo + (p.criticita ? `<span class="pain">${p.criticita}</span>` : "");
+  box.appendChild(el);
+  pos[p.id].hh = el.offsetHeight / 2;   // semialtezza reale del riquadro
+});
+
+// frecce
+const defs = S("defs", {}, svg), mk = S("marker", { id: "arr", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, defs);
+S("path", { d: "M0 0L10 5L0 10z", fill: C.ink2 }, mk);
+const HW = 66;
+FLUSSI.forEach(([a, b, lab]) => {
+  const p = pos[a], q = pos[b]; let d, lx, ly;
+  if (p.corsia === q.corsia) {                       // stessa corsia: orizzontale
+    const dir = q.x > p.x ? 1 : -1;
+    d = `M${p.x + dir * HW} ${p.y}H${q.x - dir * HW}`; lx = (p.x + q.x) / 2; ly = p.y - 8;
+  } else if (p.col === q.col) {                      // stessa colonna: verticale
+    const dir = q.y > p.y ? 1 : -1;
+    d = `M${p.x} ${p.y + dir * p.hh}V${q.y - dir * q.hh}`; lx = p.x + 8; ly = (p.y + q.y) / 2;
+  } else if (q.col < p.col) {                        // ritorno all'indietro: passa sopra/sotto
+    d = `M${p.x - HW} ${p.y}H${q.x}V${q.y + (q.y < p.y ? q.hh : -q.hh)}`; lx = (p.x + q.x) / 2; ly = p.y - 8;
+  } else {                                           // avanti e cambio corsia: a gomito
+    d = `M${p.x + HW} ${p.y}H${q.x}V${q.y + (q.y > p.y ? -q.hh : q.hh)}`; lx = p.x + HW + 14; ly = p.y - 8;
+  }
+  S("path", { d, fill: "none", stroke: C.ink2, "stroke-width": 1.5, "marker-end": "url(#arr)" }, svg);
+  if (lab) { const t = S("text", { x: lx, y: ly, "font-size": 12, fill: C.ink2, "text-anchor": "start" }, svg); t.textContent = lab; }
+});
+// criticità
+const notes = document.getElementById("notes");
+CRITICITA.forEach((c, i) => notes.insertAdjacentHTML("beforeend", `<p><b>${i + 1}</b><span>${c}</span></p>`));
+</script>
+</body>
+</html>

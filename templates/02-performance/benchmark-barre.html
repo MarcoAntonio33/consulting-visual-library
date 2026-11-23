@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Benchmark con barre ordinate</title>
+<link rel="stylesheet" href="../../assets/theme.css">
+<style>
+  .wrap { display: grid; grid-template-columns: 1fr 280px; gap: 40px; height: 100%; padding-bottom: 12px; }
+  .chartcol { display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+  .side { display: flex; flex-direction: column; gap: 14px; padding-top: 30px; }
+  .side p { margin: 0; font-size: 15px; line-height: 1.45; }
+  .big { font-size: 40px; font-weight: 600; line-height: 1; color: var(--ink); }
+</style>
+</head>
+<body class="cvl">
+<main class="slide">
+  <header class="slide-head">
+    <p class="tracker">Performance <span class="sep">/</span> Confronto con il settore</p>
+    <h1 class="action-title">Il costo per pratica è del 24% sopra la mediana del campione: il divario si concentra nelle attività di back office</h1>
+  </header>
+
+  <section class="slide-body wrap">
+    <div class="chartcol">
+      <p class="small muted" style="margin:0">Costo medio per pratica gestita, euro, 2025</p>
+      <div class="chart" id="chart" role="img" aria-label="Costo per pratica: cliente e otto operatori del campione"></div>
+    </div>
+    <aside class="side">
+      <span class="big">+24%</span>
+      <p>rispetto alla mediana di 38,5 euro. Portarsi sulla mediana vale circa 9 milioni l'anno.</p>
+      <p class="micro">Il campione comprende otto operatori comparabili per dimensione e tipologia di servizio.</p>
+    </aside>
+  </section>
+
+  <footer class="slide-foot">
+    <p class="source">Fonte: dati illustrativi; bilanci pubblicati e stime su dati di settore</p>
+    <p class="page">10</p>
+  </footer>
+</main>
+<script src="../../vendor/echarts/echarts.min.js"></script>
+<script src="../../assets/slide.js"></script>
+<script>
+/* ===== MODIFICA QUI ===== l'elemento con evidenza: true viene colorato; gli altri restano in secondo piano */
+const DATI = {
+  unita: "€",
+  righe: [
+    { nome: "Operatore A", valore: 31.2 }, { nome: "Operatore B", valore: 34.0 },
+    { nome: "Operatore C", valore: 36.8 }, { nome: "Operatore D", valore: 38.1 },
+    { nome: "Operatore E", valore: 38.9 }, { nome: "Operatore F", valore: 41.5 },
+    { nome: "Cliente", valore: 47.7, evidenza: true },
+    { nome: "Operatore G", valore: 44.0 }, { nome: "Operatore H", valore: 52.3 }
+  ]
+};
+/* ======================== */
+const C = CVL.colors;
+const righe = [...DATI.righe].sort((a, b) => b.valore - a.valore);   // dal più alto al più basso
+const vals = DATI.righe.filter(r => !r.evidenza).map(r => r.valore).sort((a, b) => a - b);
+const mediana = vals.length % 2 ? vals[(vals.length - 1) / 2] : (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2;
+
+CVL.chart("#chart", {
+  grid: { left: 110, right: 70, top: 34, bottom: 8 },
+  tooltip: { trigger: "item", formatter: p => `<b>${p.name}</b><br>${CVL.fmt(p.value)} ${DATI.unita} per pratica` },
+  xAxis: { type: "value", show: false, max: v => v.max * 1.05 },
+  yAxis: { type: "category", inverse: true, data: righe.map(r => r.nome), axisLine: { show: false },
+           axisLabel: { formatter: (v) => v, rich: {}, color: C.ink2, fontSize: 14 } },
+  series: [{
+    type: "bar", barWidth: 22,
+    data: righe.map(r => ({ value: r.valore, itemStyle: { color: r.evidenza ? C.focus : C.context, borderRadius: [0, 4, 4, 0] },
+      label: { fontWeight: r.evidenza ? 600 : 400 } })),
+    label: { show: true, position: "right", distance: 8, color: C.ink, fontSize: 14, backgroundColor: C.paper, padding: [2, 4], formatter: p => CVL.fmt(p.value, { minimumFractionDigits: 1 }) + " " + DATI.unita },
+    markLine: { silent: true, z: 0, symbol: "none", lineStyle: { color: C.ink, width: 1.5, type: "solid" },
+      label: { position: "start", formatter: `Mediana ${CVL.fmt(mediana)} ${DATI.unita}`, color: C.ink, fontSize: 13, fontWeight: 500, distance: [0, 6] },
+      data: [{ xAxis: mediana }] }
+  }]
+});
+</script>
+</body>
+</html>
